@@ -23,3 +23,11 @@ variable "authentik_email_subject_enrollment" {
 variable "authentik_email_template_enrollment" {
   default = "email/account_confirmation.html"
 }
+
+variable "authentik_email_subject_recovery" {
+  default = "Reset your password for JHaaS"
+}
+
+variable "authentik_email_template_recovery" {
+  default = "email/password_reset.html"
+}

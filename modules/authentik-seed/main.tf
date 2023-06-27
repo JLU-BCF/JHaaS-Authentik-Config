@@ -109,6 +109,34 @@ resource "authentik_flow" "enrollment" {
   background          = var.authentik_flow_background
 }
 
+# Flow to reset password
+resource "authentik_flow" "recovery" {
+  name                = "jhaas-recovery"
+  title               = "Reset your Password"
+  slug                = "password-recovery"
+  designation         = "recovery"
+  authentication      = "require_unauthenticated"
+  denied_action       = "message_continue"
+  layout              = "stacked"
+  policy_engine_mode  = "any"
+  compatibility_mode  = true
+  background          = var.authentik_flow_background
+}
+
+# Flow to authenticate user
+resource "authentik_flow" "auth" {
+  name                = "jhaas-auth"
+  title               = "Login"
+  slug                = "auth"
+  designation         = "authentication"
+  authentication      = "none"
+  denied_action       = "message_continue"
+  layout              = "stacked"
+  policy_engine_mode  = "any"
+  compatibility_mode  = true
+  background          = var.authentik_flow_background
+}
+
 #
 ########################
 #
@@ -241,6 +269,28 @@ resource "authentik_stage_prompt_field" "enrollment_mfa_text" {
   MFA_TEXT
 }
 
+# Setup Password Prompt field for password recovery
+resource "authentik_stage_prompt_field" "recovery_password" {
+  name        = "jhaas-recovery-password"
+  label       = "Password"
+  placeholder = "Password"
+  field_key   = "password"
+  type        = "password"
+  order       = 10
+  required    = true
+}
+
+# Setup Password Repeat Prompt field for password recovery
+resource "authentik_stage_prompt_field" "recovery_password_repeat" {
+  name        = "jhaas-recovery-password-repeat"
+  label       = "Password (repeat)"
+  placeholder = "Password (repeat)"
+  field_key   = "password_repeat"
+  type        = "password"
+  order       = 20
+  required    = true
+}
+
 #
 ########################
 #
@@ -296,6 +346,15 @@ resource "authentik_policy_expression" "enrollment_map_attributes" {
 
       return True
   MAP_ATTRIBUTES
+}
+
+# Policy to check if this is a restored session
+resource "authentik_policy_expression" "recovery_skip_if_restored" {
+  name              = "jhaas-recovery-skip-if-restored"
+  execution_logging = true
+  expression        = <<-SKIP_IF_RESTORED
+      return bool(request.context.get('is_restored', True))
+  SKIP_IF_RESTORED
 }
 
 #
@@ -429,6 +488,96 @@ resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
 # Login Stage to automatically login user after enrollment
 resource "authentik_stage_user_login" "enrollment_login" {
   name                = "jhaas-enrollment-login"
+  remember_me_offset  = "seconds=0"
+  session_duration    = "seconds=0"
+}
+
+# Identification Stage for password recovery
+resource "authentik_stage_identification" "recovery_identification" {
+  name                      = "jhaas-recovery-identification"
+  user_fields               = ["email"]
+  case_insensitive_matching = true
+  show_matched_user         = false
+}
+
+# Email Stage for password recovery
+resource "authentik_stage_email" "recovery_email" {
+  name = "jhaas-recovery-email"
+  use_global_settings = true
+  activate_user_on_success = true
+  subject = var.authentik_email_subject_recovery
+  template = var.authentik_email_template_recovery
+  token_expiry = 30
+}
+
+# MFA Stage without Static Codes for Password Recovery
+resource "authentik_stage_authenticator_validate" "recovery_mfa_validation" {
+  name                  = "jhaas-recovery-mfa-validation"
+  device_classes        = ["totp", "webauthn"]
+  not_configured_action = "deny"
+  last_auth_threshold   = "seconds=0"
+}
+
+# Prompt stage to get passwords
+resource "authentik_stage_prompt" "recovery_prompt" {
+  name = "jhaas-recovery-prompt"
+  fields = [
+    authentik_stage_prompt_field.recovery_password.id,
+    authentik_stage_prompt_field.recovery_password_repeat.id
+  ]
+}
+
+# User write stage for Password Recovery
+resource "authentik_stage_user_write" "recovery_write" {
+  name                = "jhaas-recovery-write"
+  user_creation_mode  = "never_create"
+}
+
+# Login after password reset
+resource "authentik_stage_user_login" "recovery_login" {
+  name                = "jhaas-recovery-login"
+  remember_me_offset  = "seconds=0"
+  session_duration    = "seconds=0"
+}
+
+# Password Stage for Authentication
+resource "authentik_stage_password" "auth_password" {
+  name     = "jhaas-auth-password"
+  backends = ["authentik.core.auth.InbuiltBackend"]
+  configure_flow = authentik_flow.password_setup.uuid
+  failed_attempts_before_cancel = 5
+}
+
+# Identification Stage for Authentication
+resource "authentik_stage_identification" "auth_identification" {
+  name                      = "jhaas-auth-identification"
+  user_fields               = ["email"]
+  case_insensitive_matching = true
+  show_matched_user         = false
+  show_source_labels        = false
+
+  enrollment_flow           = authentik_flow.enrollment.id
+  recovery_flow             = authentik_flow.recovery.id
+  password_stage            = authentik_stage_password.auth_password.id
+}
+
+# Stage to validate mfa in Authentication
+resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
+  name                        = "jhaas-auth-mfa-validate"
+  device_classes              = ["totp", "webauthn", "static"]
+  not_configured_action       = "configure"
+  webauthn_user_verification  = "preferred"
+  last_auth_threshold         = "seconds=0"
+  configuration_stages        = [
+    authentik_stage_authenticator_totp.totp_setup.id,
+    authentik_stage_authenticator_webauthn.webauthn_setup.id,
+    authentik_stage_authenticator_static.mfa_static_setup.id,
+  ]
+}
+
+# Login after successfull authentication
+resource "authentik_stage_user_login" "auth_login" {
+  name                = "jhaas-auth-login"
   remember_me_offset  = "seconds=0"
   session_duration    = "seconds=0"
 }
@@ -606,6 +755,105 @@ resource "authentik_flow_stage_binding" "enrollment_2_enrollment_login" {
   evaluate_on_plan = true
 }
 
+# Binds Identification Stage to Recovery Flow
+resource "authentik_flow_stage_binding" "recovery_2_recovery_identification" {
+  target = authentik_flow.recovery.uuid
+  stage  = authentik_stage_identification.recovery_identification.id
+  order  = 10
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = true
+}
+
+# Binds Email Stage to Recovery Flow
+resource "authentik_flow_stage_binding" "recovery_2_recovery_email" {
+  target = authentik_flow.recovery.uuid
+  stage  = authentik_stage_email.recovery_email.id
+  order  = 20
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = true
+}
+
+# Binds MFA Validation Stage to Recovery Flow
+resource "authentik_flow_stage_binding" "recovery_2_recovery_mfa_validation" {
+  target = authentik_flow.recovery.uuid
+  stage  = authentik_stage_authenticator_validate.recovery_mfa_validation.id
+  order  = 30
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = false
+}
+
+# Binds Prompt Stage to Recovery Flow
+resource "authentik_flow_stage_binding" "recovery_2_recovery_prompt" {
+  target = authentik_flow.recovery.uuid
+  stage  = authentik_stage_prompt.recovery_prompt.id
+  order  = 40
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = true
+}
+
+# Binds User Write Stage to Recovery Flow
+resource "authentik_flow_stage_binding" "recovery_2_recovery_write" {
+  target = authentik_flow.recovery.uuid
+  stage  = authentik_stage_user_write.recovery_write.id
+  order  = 50
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = true
+}
+
+# Binds Login Stage to Recovery Flow
+resource "authentik_flow_stage_binding" "recovery_2_recovery_login" {
+  target = authentik_flow.recovery.uuid
+  stage  = authentik_stage_user_login.recovery_login.id
+  order  = 60
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = true
+}
+
+# Binds Identification Stage to Auth Flow
+resource "authentik_flow_stage_binding" "auth_2_auth_identification" {
+  target = authentik_flow.auth.uuid
+  stage  = authentik_stage_identification.auth_identification.id
+  order  = 10
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = false
+}
+
+# Binds MFA Validation Stage to Auth Flow
+resource "authentik_flow_stage_binding" "auth_2_auth_mfa_validate" {
+  target = authentik_flow.auth.uuid
+  stage  = authentik_stage_authenticator_validate.auth_mfa_validate.id
+  order  = 20
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = false
+}
+
+# Binds Login Stage to Auth Flow
+resource "authentik_flow_stage_binding" "auth_2_auth_login" {
+  target = authentik_flow.auth.uuid
+  stage  = authentik_stage_user_login.auth_login.id
+  order  = 30
+  invalid_response_action = "retry"
+  policy_engine_mode = "any"
+  re_evaluate_policies = true
+  evaluate_on_plan = false
+}
+
 #
 ########################
 #
@@ -641,5 +889,15 @@ resource "authentik_policy_binding" "enrollment_map_attributes_2_enrollment" {
   order  = 20
   enabled = true
   negate = true
+  timeout = 30
+}
+
+# Binds Redirect-If-Restored Policy to recovery_2_recovery_identification
+resource "authentik_policy_binding" "recovery_skip_if_restored_2_recovery" {
+  target = authentik_flow_stage_binding.recovery_2_recovery_identification.id
+  policy = authentik_policy_expression.recovery_skip_if_restored.id
+  order  = 0
+  enabled = true
+  negate = false
   timeout = 30
 }
