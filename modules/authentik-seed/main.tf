@@ -137,6 +137,34 @@ resource "authentik_flow" "auth" {
   background          = var.authentik_flow_background
 }
 
+# Flow to logout user
+resource "authentik_flow" "logout" {
+  name                = "jhaas-logout"
+  title               = "Logout"
+  slug                = "logout"
+  designation         = "invalidation"
+  authentication      = "none"
+  denied_action       = "message_continue"
+  layout              = "stacked"
+  policy_engine_mode  = "any"
+  compatibility_mode  = true
+  background          = var.authentik_flow_background
+}
+
+# Flow to implicitly consent to jhaas
+resource "authentik_flow" "consent" {
+  name                = "jhaas-consent"
+  title               = "Consent"
+  slug                = "consent"
+  designation         = "authorization"
+  authentication      = "require_authenticated"
+  denied_action       = "message_continue"
+  layout              = "stacked"
+  policy_engine_mode  = "any"
+  compatibility_mode  = true
+  background          = var.authentik_flow_background
+}
+
 #
 ########################
 #
@@ -355,6 +383,34 @@ resource "authentik_policy_expression" "recovery_skip_if_restored" {
   expression        = <<-SKIP_IF_RESTORED
       return bool(request.context.get('is_restored', True))
   SKIP_IF_RESTORED
+}
+
+# Policy to set redirect url
+resource "authentik_policy_expression" "logout_set_redirect_url" {
+  name              = "jhaas-logout-set-redirect-url"
+  execution_logging = true
+  expression        = <<-SET_REDIRECT_URL
+      context['flow_plan'].context['redirect'] = "${var.authentik_jhaas_verify_redirect}"
+
+      return True
+  SET_REDIRECT_URL
+}
+
+# Policy to redirect user if already logged out
+resource "authentik_policy_expression" "logout_redirect_if_unauth" {
+  name              = "jhaas-logout-redirect-if-unauth"
+  execution_logging = true
+  expression        = <<-REDIRECT_IF_UNAUTH
+      if request.user and request.user.is_authenticated:
+        return True
+
+      plan = request.context.get("flow_plan")
+      if not plan:
+        return False
+
+      plan.redirect("${var.authentik_jhaas_verify_redirect}")
+      return False
+  REDIRECT_IF_UNAUTH
 }
 
 #
@@ -580,6 +636,11 @@ resource "authentik_stage_user_login" "auth_login" {
   name                = "jhaas-auth-login"
   remember_me_offset  = "seconds=0"
   session_duration    = "seconds=0"
+}
+
+# Logout after successfull invalidation
+resource "authentik_stage_user_logout" "logout" {
+  name = "jhaas-logout"
 }
 
 #
@@ -854,6 +915,17 @@ resource "authentik_flow_stage_binding" "auth_2_auth_login" {
   evaluate_on_plan = false
 }
 
+# Binds Logout Stage to Logout Flow
+resource "authentik_flow_stage_binding" "logout_2_logout" {
+  target = authentik_flow.logout.uuid
+  stage  = authentik_stage_user_logout.logout.id
+  order  = 0
+  invalid_response_action = "retry"
+  policy_engine_mode = "all"
+  re_evaluate_policies = true
+  evaluate_on_plan = true
+}
+
 #
 ########################
 #
@@ -897,6 +969,26 @@ resource "authentik_policy_binding" "recovery_skip_if_restored_2_recovery" {
   target = authentik_flow_stage_binding.recovery_2_recovery_identification.id
   policy = authentik_policy_expression.recovery_skip_if_restored.id
   order  = 0
+  enabled = true
+  negate = false
+  timeout = 30
+}
+
+# Binds Set-Redirect-Url Policy to logout_2_logout
+resource "authentik_policy_binding" "logout_set_redirect_url_2_logout" {
+  target = authentik_flow_stage_binding.logout_2_logout.id
+  policy = authentik_policy_expression.logout_set_redirect_url.id
+  order  = 0
+  enabled = true
+  negate = false
+  timeout = 30
+}
+
+# Binds Redirect-If-Unauth Policy to logout_2_logout
+resource "authentik_policy_binding" "logout_redirect_if_unauth_2_logout" {
+  target = authentik_flow_stage_binding.logout_2_logout.id
+  policy = authentik_policy_expression.logout_redirect_if_unauth.id
+  order  = 10
   enabled = true
   negate = false
   timeout = 30

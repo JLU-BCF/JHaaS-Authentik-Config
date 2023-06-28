@@ -16,6 +16,11 @@ variable "authentik_jhaas_login_redirect" {
   # e.g. https://jhaas-test.gi.denbi.de/api/auth/oidc/cb
 }
 
+variable "authentik_jhaas_verify_redirect" {
+  description = "URL for the JHaaS verify redirect"
+  # e.g. https://jhaas-test.gi.denbi.de/verify
+}
+
 variable "authentik_email_subject_enrollment" {
   default = "Verify you Email address for JHaaS"
 }
