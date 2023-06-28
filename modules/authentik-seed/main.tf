@@ -1,3 +1,11 @@
+# !!!
+# There are some properties commented which are not yet supported by
+# the provider. The code is already updated but not yet released!
+# See:
+# https://github.com/goauthentik/terraform-provider-authentik/issues/371
+# https://github.com/goauthentik/terraform-provider-authentik/issues/372
+# https://github.com/goauthentik/terraform-provider-authentik/issues/374
+
 provider "authentik" {
   url   = var.authentik_url
   token = var.authentik_token
@@ -203,13 +211,19 @@ resource "authentik_stage_prompt_field" "enrollment_tos_text" {
   type        = "static"
   order       = 0
   required    = true
-  sub_text    = <<-TOS_TEXT
-      You are about to create an account for JHaaS. This is a prototype and
-      we do not assume any liability or warranty for anything. Your data will not
-      be shared with any third party and will be completely removed once the prototype
-      stage is over. Read the <a target="_blank" href="${var.authentik_tos_url}">terms
-      of use.</a>
-  TOS_TEXT
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # sub_text    = <<-TOS_TEXT
+  #     You are about to create an account for JHaaS. This is a prototype and
+  #     we do not assume any liability or warranty for anything. Your data will not
+  #     be shared with any third party and will be completely removed once the prototype
+  #     stage is over. Read the <a target="_blank" href="${var.authentik_tos_url}">terms
+  #     of use.</a>
+  # TOS_TEXT
 }
 
 # Setup TOS acceptance field for enrollment
@@ -274,12 +288,18 @@ resource "authentik_stage_prompt_field" "enrollment_recovery_codes_text" {
   type        = "static"
   order       = 0
   required    = true
-  sub_text    = <<-TOKEN_TEXT
-      The next step is to set up multi-factor authentication. First, static
-      recovery tokens are generated for you. It is important to keep these tokens
-      safe (e.g. print them out) to be able to reset the account in case a second
-      factor is lost.
-  TOKEN_TEXT
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # sub_text    = <<-TOKEN_TEXT
+  #     The next step is to set up multi-factor authentication. First, static
+  #     recovery tokens are generated for you. It is important to keep these tokens
+  #     safe (e.g. print them out) to be able to reset the account in case a second
+  #     factor is lost.
+  # TOKEN_TEXT
 }
 
 # Setup Pre MFA Setup Text field for enrollment
@@ -290,11 +310,17 @@ resource "authentik_stage_prompt_field" "enrollment_mfa_text" {
   type        = "static"
   order       = 0
   required    = true
-  sub_text    = <<-MFA_TEXT
-      In the next step, you select a second factor. This can be done either
-      with an Authenticator app (a QR code will be displayed which has to be scanned
-      with the Authenticator app) or with a WebAuthn device such as a Yubikey.
-  MFA_TEXT
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # sub_text    = <<-MFA_TEXT
+  #     In the next step, you select a second factor. This can be done either
+  #     with an Authenticator app (a QR code will be displayed which has to be scanned
+  #     with the Authenticator app) or with a WebAuthn device such as a Yubikey.
+  # MFA_TEXT
 }
 
 # Setup Password Prompt field for password recovery
@@ -434,8 +460,14 @@ resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
   name                      = "jhaas-webauthn-setup"
   friendly_name             = "Use WebAuthn Device"
   configure_flow            = authentik_flow.webauthn_setup.uuid
-  resident_key_requirement  = "preferred"
-  user_verification         = "preferred"
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # resident_key_requirement  = "preferred"
+  # user_verification         = "preferred"
 }
 
 # Configuration Stage for MFA Static Tokens Setup
@@ -533,7 +565,14 @@ resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
   name                        = "jhaas-enrollment-mfa-setup"
   device_classes              = ["totp", "webauthn"]
   not_configured_action       = "configure"
-  webauthn_user_verification  = "required"
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # webauthn_user_verification  = "required"
+
   last_auth_threshold         = "seconds=0"
   configuration_stages        = [
     authentik_stage_authenticator_totp.totp_setup.id,
@@ -544,7 +583,14 @@ resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
 # Login Stage to automatically login user after enrollment
 resource "authentik_stage_user_login" "enrollment_login" {
   name                      = "jhaas-enrollment-login"
-  remember_me_offset        = "seconds=0"
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # remember_me_offset        = "seconds=0"
+
   session_duration          = "seconds=0"
 }
 
@@ -592,7 +638,14 @@ resource "authentik_stage_user_write" "recovery_write" {
 # Login after password reset
 resource "authentik_stage_user_login" "recovery_login" {
   name                      = "jhaas-recovery-login"
-  remember_me_offset        = "seconds=0"
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # remember_me_offset        = "seconds=0"
+
   session_duration          = "seconds=0"
 }
 
@@ -612,8 +665,8 @@ resource "authentik_stage_identification" "auth_identification" {
   show_matched_user         = false
   show_source_labels        = false
 
-  enrollment_flow           = authentik_flow.enrollment.id
-  recovery_flow             = authentik_flow.recovery.id
+  enrollment_flow           = authentik_flow.enrollment.uuid
+  recovery_flow             = authentik_flow.recovery.uuid
   password_stage            = authentik_stage_password.auth_password.id
 }
 
@@ -622,7 +675,14 @@ resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
   name                        = "jhaas-auth-mfa-validate"
   device_classes              = ["totp", "webauthn", "static"]
   not_configured_action       = "configure"
-  webauthn_user_verification  = "preferred"
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # webauthn_user_verification  = "preferred"
+
   last_auth_threshold         = "seconds=0"
   configuration_stages        = [
     authentik_stage_authenticator_totp.totp_setup.id,
@@ -634,7 +694,14 @@ resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
 # Login after successfull authentication
 resource "authentik_stage_user_login" "auth_login" {
   name                      = "jhaas-auth-login"
-  remember_me_offset        = "seconds=0"
+
+  # !!!
+  # TODO: uncomment when new provider version is released
+  # that supports this property
+  # !!!
+
+  # remember_me_offset        = "seconds=0"
+
   session_duration          = "seconds=0"
 }
 
@@ -1068,7 +1135,7 @@ resource "authentik_provider_oauth2" "portal" {
   client_secret               = var.authentik_jhaas_client_secret
   client_type                 = "confidential"
   redirect_uris               = [
-    var.authentik_redirect_uri
+    var.authentik_provider_redirect_uri
   ]
 
   sub_mode                    = "user_id"
@@ -1125,7 +1192,7 @@ resource "authentik_application" "portal" {
 
 resource "authentik_tenant" "jhaas" {
   domain              = var.authentik_domain
-  default             = true
+  default             = false
 
   branding_title      = var.authentik_branding_title
   branding_favicon    = var.authentik_branding_favicon
@@ -1140,5 +1207,5 @@ resource "authentik_tenant" "jhaas" {
 
   web_certificate     = ""
   event_retention     = "days=365"
-  attributes          = {}
+  attributes          = "{}"
 }

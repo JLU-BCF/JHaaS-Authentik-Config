@@ -1,3 +1,9 @@
+variable "authentik_url" {
+}
+
+variable "authentik_token" {
+}
+
 variable "authentik_jhaas_client_id" {
 
 }
@@ -12,6 +18,7 @@ variable "authentik_provider_redirect_uri" {
 
 variable "authentik_flow_background" {
   description = "Default Background applied to all flows"
+  default = "/static/dist/assets/images/flow_background.jpg"
 }
 
 variable "authentik_tos_url" {
