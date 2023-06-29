@@ -6,6 +6,9 @@
 # https://github.com/goauthentik/terraform-provider-authentik/issues/372
 # https://github.com/goauthentik/terraform-provider-authentik/issues/374
 
+# There is an issue with configuration stages, for now they will be disabled
+# https://github.com/goauthentik/terraform-provider-authentik/issues/376
+
 provider "authentik" {
   url   = var.authentik_url
   token = var.authentik_token
@@ -216,7 +219,6 @@ resource "authentik_stage_prompt_field" "enrollment_tos_text" {
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # sub_text    = <<-TOS_TEXT
   #     You are about to create an account for JHaaS. This is a prototype and
   #     we do not assume any liability or warranty for anything. Your data will not
@@ -293,7 +295,6 @@ resource "authentik_stage_prompt_field" "enrollment_recovery_codes_text" {
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # sub_text    = <<-TOKEN_TEXT
   #     The next step is to set up multi-factor authentication. First, static
   #     recovery tokens are generated for you. It is important to keep these tokens
@@ -315,7 +316,6 @@ resource "authentik_stage_prompt_field" "enrollment_mfa_text" {
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # sub_text    = <<-MFA_TEXT
   #     In the next step, you select a second factor. This can be done either
   #     with an Authenticator app (a QR code will be displayed which has to be scanned
@@ -465,7 +465,6 @@ resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # resident_key_requirement  = "preferred"
   # user_verification         = "preferred"
 }
@@ -564,20 +563,27 @@ resource "authentik_stage_prompt" "enrollment_pre_mfa" {
 resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
   name                        = "jhaas-enrollment-mfa-setup"
   device_classes              = ["totp", "webauthn"]
-  not_configured_action       = "configure"
+
+  # !!!
+  # TODO: set to "configure" when issue is resolved
+  # !!!
+  not_configured_action       = "skip"
 
   # !!!
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # webauthn_user_verification  = "required"
 
   last_auth_threshold         = "seconds=0"
-  configuration_stages        = [
-    authentik_stage_authenticator_totp.totp_setup.id,
-    authentik_stage_authenticator_webauthn.webauthn_setup.id
-  ]
+
+  # !!!
+  # TODO: uncomment this when issue is resolved
+  # !!!
+  # configuration_stages        = [
+  #   authentik_stage_authenticator_totp.totp_setup.id,
+  #   authentik_stage_authenticator_webauthn.webauthn_setup.id
+  # ]
 }
 
 # Login Stage to automatically login user after enrollment
@@ -588,7 +594,6 @@ resource "authentik_stage_user_login" "enrollment_login" {
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # remember_me_offset        = "seconds=0"
 
   session_duration          = "seconds=0"
@@ -643,7 +648,6 @@ resource "authentik_stage_user_login" "recovery_login" {
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # remember_me_offset        = "seconds=0"
 
   session_duration          = "seconds=0"
@@ -674,21 +678,28 @@ resource "authentik_stage_identification" "auth_identification" {
 resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
   name                        = "jhaas-auth-mfa-validate"
   device_classes              = ["totp", "webauthn", "static"]
-  not_configured_action       = "configure"
+
+  # !!!
+  # TODO: set to "configure" when issue is resolved
+  # !!!
+  not_configured_action       = "skip"
 
   # !!!
   # TODO: uncomment when new provider version is released
   # that supports this property
   # !!!
-
   # webauthn_user_verification  = "preferred"
 
   last_auth_threshold         = "seconds=0"
-  configuration_stages        = [
-    authentik_stage_authenticator_totp.totp_setup.id,
-    authentik_stage_authenticator_webauthn.webauthn_setup.id,
-    authentik_stage_authenticator_static.mfa_static_setup.id,
-  ]
+
+  # !!!
+  # TODO: uncomment this when issue is resolved
+  # !!!
+  # configuration_stages        = [
+  #   authentik_stage_authenticator_totp.totp_setup.id,
+  #   authentik_stage_authenticator_webauthn.webauthn_setup.id,
+  #   authentik_stage_authenticator_static.mfa_static_setup.id,
+  # ]
 }
 
 # Login after successfull authentication
