@@ -1203,7 +1203,7 @@ resource "authentik_application" "portal" {
 
 resource "authentik_tenant" "jhaas" {
   domain              = var.authentik_domain
-  default             = false
+  default             = true
 
   branding_title      = var.authentik_branding_title
   branding_favicon    = var.authentik_branding_favicon
