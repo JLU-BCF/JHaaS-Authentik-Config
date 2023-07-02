@@ -33,13 +33,13 @@ resource "random_password" "db_pass" {
 module "authentik-deploy" {
   source = "./modules/authentik-deploy"
 
-  depends_on = [
-    random_password.authentik_secret,
-    random_password.authentik_token,
-    random_password.authentik_password,
-    random_pet.db_user,
-    random_password.db_pass
-  ]
+  # depends_on = [
+  #   random_password.authentik_secret,
+  #   random_password.authentik_token,
+  #   random_password.authentik_password,
+  #   random_pet.db_user,
+  #   random_password.db_pass
+  # ]
 
   kubeconfig_path = var.kubeconfig_path
   k8s_namespace = var.k8s_namespace
@@ -64,10 +64,10 @@ module "authentik-deploy" {
 
 }
 
-module "authentik-seed" {
-  source = "./modules/authentik-seed"
+# module "authentik-seed" {
+#   source = "./modules/authentik-seed"
 
-  depends_on = [
-    module.authentik-deploy
-  ]
-}
+#   depends_on = [
+#     module.authentik-deploy
+#   ]
+# }
