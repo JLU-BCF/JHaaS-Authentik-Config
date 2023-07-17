@@ -1,5 +1,5 @@
 provider "authentik" {
-  url   = var.authentik_url
+  url   = local.authentik_url
   token = var.authentik_token
 }
 
@@ -208,7 +208,7 @@ resource "authentik_stage_prompt_field" "enrollment_tos_text" {
       You are about to create an account for JHaaS. This is a prototype and
       we do not assume any liability or warranty for anything. Your data will not
       be shared with any third party and will be completely removed once the prototype
-      stage is over. Read the <a target="_blank" href="${var.authentik_tos_url}">terms
+      stage is over. Read the <a target="_blank" href="${local.authentik_tos_url}">terms
       of use.</a>
   TOS_TEXT
 }
@@ -336,7 +336,7 @@ resource "authentik_policy_expression" "enrollment_login_redirect" {
   name              = "jhaas-enrollment-login-redirect"
   execution_logging = true
   expression        = <<-LOGIN_REDIRECT
-      context['flow_plan'].context['redirect'] = "${var.authentik_jhaas_login_redirect}"
+      context['flow_plan'].context['redirect'] = "${local.authentik_jhaas_login_redirect}"
       return True
   LOGIN_REDIRECT
 }
@@ -393,7 +393,7 @@ resource "authentik_policy_expression" "logout_set_redirect_url" {
   name              = "jhaas-logout-set-redirect-url"
   execution_logging = true
   expression        = <<-SET_REDIRECT_URL
-      context['flow_plan'].context['redirect'] = "${var.authentik_jhaas_verify_redirect}"
+      context['flow_plan'].context['redirect'] = "${local.authentik_jhaas_verify_redirect}"
 
       return True
   SET_REDIRECT_URL
@@ -411,7 +411,7 @@ resource "authentik_policy_expression" "logout_redirect_if_unauth" {
       if not plan:
         return False
 
-      plan.redirect("${var.authentik_jhaas_verify_redirect}")
+      plan.redirect("${local.authentik_jhaas_verify_redirect}")
       return False
   REDIRECT_IF_UNAUTH
 }
@@ -1120,7 +1120,7 @@ resource "authentik_provider_oauth2" "portal" {
   client_secret               = var.authentik_jhaas_client_secret
   client_type                 = "confidential"
   redirect_uris               = [
-    var.authentik_provider_redirect_uri
+    local.authentik_provider_redirect_uri
   ]
 
   signing_key                 = authentik_certificate_key_pair.authentik_self_signed.id
@@ -1164,7 +1164,7 @@ resource "authentik_application" "portal" {
 
   meta_description      = var.authentik_jhaas_slogan
   meta_icon             = var.authentik_branding_favicon
-  meta_launch_url       = var.authentik_jhaas_launch_url
+  meta_launch_url       = local.authentik_jhaas_launch_url
   meta_publisher        = var.authentik_branding_publisher
 }
 
