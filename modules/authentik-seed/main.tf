@@ -1124,7 +1124,7 @@ resource "authentik_provider_oauth2" "portal" {
   ]
 
   signing_key                 = authentik_certificate_key_pair.authentik_self_signed.id
-  sub_mode                    = "user_uuid"
+  sub_mode                    = "user_id"
 
   authentication_flow         = authentik_flow.auth.uuid
   authorization_flow          = authentik_flow.consent.uuid
