@@ -13,22 +13,22 @@ provider "authentik" {
 
 # Group to identify the government
 resource "authentik_group" "portal_admins" {
-  name         = "portal-admins"
+  name = "portal-admins"
 }
 
 # Group to identify leaders
 resource "authentik_group" "portal_leaders" {
-  name         = "portal-leaders"
+  name = "portal-leaders"
 }
 
 # Group attached to users validated with trusted Source (e.g. LDAP)
 resource "authentik_group" "auth_trusted" {
-  name         = "auth-trusted"
+  name = "auth-trusted"
 }
 
 # Group attached to self registered users
 resource "authentik_group" "auth_untrusted" {
-  name         = "auth-untrusted"
+  name = "auth-untrusted"
 }
 
 #
@@ -41,128 +41,128 @@ resource "authentik_group" "auth_untrusted" {
 
 # Flow to setup MFA with a TOTP Generator
 resource "authentik_flow" "totp_setup" {
-  name                = "jhaas-totp-setup"
-  title               = "Setup Authenticator App"
-  slug                = "totp-setup"
-  designation         = "stage_configuration"
-  authentication      = "require_authenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-totp-setup"
+  title              = "Setup Authenticator App"
+  slug               = "totp-setup"
+  designation        = "stage_configuration"
+  authentication     = "require_authenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to setup MFA with a WebAuthn Device
 resource "authentik_flow" "webauthn_setup" {
-  name                = "jhaas-webauthn-setup"
-  title               = "Setup WebAuthn Device"
-  slug                = "webauthn-setup"
-  designation         = "stage_configuration"
-  authentication      = "require_authenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-webauthn-setup"
+  title              = "Setup WebAuthn Device"
+  slug               = "webauthn-setup"
+  designation        = "stage_configuration"
+  authentication     = "require_authenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to setup MFA with static tokens
 resource "authentik_flow" "mfa_static_setup" {
-  name                = "jhaas-mfa-static-setup"
-  title               = "Recovery Codes"
-  slug                = "mfa-static-setup"
-  designation         = "stage_configuration"
-  authentication      = "require_authenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-mfa-static-setup"
+  title              = "Recovery Codes"
+  slug               = "mfa-static-setup"
+  designation        = "stage_configuration"
+  authentication     = "require_authenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to setup initial Password or Password Reset
 resource "authentik_flow" "password_setup" {
-  name                = "jhaas-password-setup"
-  title               = "Setup your Password"
-  slug                = "password-setup"
-  designation         = "stage_configuration"
-  authentication      = "require_authenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-password-setup"
+  title              = "Setup your Password"
+  slug               = "password-setup"
+  designation        = "stage_configuration"
+  authentication     = "require_authenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to self enroll user accounts
 resource "authentik_flow" "enrollment" {
-  name                = "jhaas-enrollment"
-  title               = "Sign Up"
-  slug                = "enrollment"
-  designation         = "enrollment"
-  authentication      = "require_unauthenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-enrollment"
+  title              = "Sign Up"
+  slug               = "enrollment"
+  designation        = "enrollment"
+  authentication     = "require_unauthenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to reset password
 resource "authentik_flow" "recovery" {
-  name                = "jhaas-recovery"
-  title               = "Reset your Password"
-  slug                = "password-recovery"
-  designation         = "recovery"
-  authentication      = "require_unauthenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-recovery"
+  title              = "Reset your Password"
+  slug               = "password-recovery"
+  designation        = "recovery"
+  authentication     = "require_unauthenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to authenticate user
 resource "authentik_flow" "auth" {
-  name                = "jhaas-auth"
-  title               = "Login"
-  slug                = "auth"
-  designation         = "authentication"
-  authentication      = "none"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-auth"
+  title              = "Login"
+  slug               = "auth"
+  designation        = "authentication"
+  authentication     = "none"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to logout user
 resource "authentik_flow" "logout" {
-  name                = "jhaas-logout"
-  title               = "Logout"
-  slug                = "logout"
-  designation         = "invalidation"
-  authentication      = "none"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-logout"
+  title              = "Logout"
+  slug               = "logout"
+  designation        = "invalidation"
+  authentication     = "none"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 # Flow to implicitly consent to jhaas
 resource "authentik_flow" "consent" {
-  name                = "jhaas-consent"
-  title               = "Consent"
-  slug                = "consent"
-  designation         = "authorization"
-  authentication      = "require_authenticated"
-  denied_action       = "message_continue"
-  layout              = "stacked"
-  policy_engine_mode  = "any"
-  compatibility_mode  = true
-  background          = var.authentik_flow_background
+  name               = "jhaas-consent"
+  title              = "Consent"
+  slug               = "consent"
+  designation        = "authorization"
+  authentication     = "require_authenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
 }
 
 #
@@ -197,14 +197,14 @@ resource "authentik_stage_prompt_field" "setup_password_repeat" {
 
 # Setup TOS text field for enrollment
 resource "authentik_stage_prompt_field" "enrollment_tos_text" {
-  name        = "jhaas-enrollment-tos-text"
-  label       = "Terms of service"
-  field_key   = "tos_text"
-  type        = "static"
-  order       = 0
-  required    = true
+  name      = "jhaas-enrollment-tos-text"
+  label     = "Terms of service"
+  field_key = "tos_text"
+  type      = "static"
+  order     = 0
+  required  = true
 
-  sub_text    = <<-TOS_TEXT
+  sub_text = <<-TOS_TEXT
       You are about to create an account for JHaaS. This is a prototype and
       we do not assume any liability or warranty for anything. Your data will not
       be shared with any third party and will be completely removed once the prototype
@@ -215,12 +215,12 @@ resource "authentik_stage_prompt_field" "enrollment_tos_text" {
 
 # Setup TOS acceptance field for enrollment
 resource "authentik_stage_prompt_field" "enrollment_tos_accept" {
-  name        = "jhaas-enrollment-tos-accept"
-  label       = "I accept the terms of service"
-  field_key   = "tos_accept"
-  type        = "checkbox"
-  order       = 5
-  required    = true
+  name      = "jhaas-enrollment-tos-accept"
+  label     = "I accept the terms of service"
+  field_key = "tos_accept"
+  type      = "checkbox"
+  order     = 5
+  required  = true
 }
 
 # Setup Given Name field for enrollment
@@ -269,14 +269,14 @@ resource "authentik_stage_prompt_field" "enrollment_password" {
 
 # Setup Pre Recovery Codes Text field for enrollment
 resource "authentik_stage_prompt_field" "enrollment_recovery_codes_text" {
-  name        = "jhaas-enrollment-revocery-codes-text"
-  label       = "Information about recovery codes"
-  field_key   = "revocery_codes_text"
-  type        = "static"
-  order       = 0
-  required    = true
+  name      = "jhaas-enrollment-revocery-codes-text"
+  label     = "Information about recovery codes"
+  field_key = "revocery_codes_text"
+  type      = "static"
+  order     = 0
+  required  = true
 
-  sub_text    = <<-TOKEN_TEXT
+  sub_text = <<-TOKEN_TEXT
       The next step is to set up multi-factor authentication. First, static
       recovery tokens are generated for you. It is important to keep these tokens
       safe (e.g. print them out) to be able to reset the account in case a second
@@ -286,14 +286,14 @@ resource "authentik_stage_prompt_field" "enrollment_recovery_codes_text" {
 
 # Setup Pre MFA Setup Text field for enrollment
 resource "authentik_stage_prompt_field" "enrollment_mfa_text" {
-  name        = "jhaas-enrollment-mfa-text"
-  label       = "Information about MFA"
-  field_key   = "mfa_text"
-  type        = "static"
-  order       = 0
-  required    = true
+  name      = "jhaas-enrollment-mfa-text"
+  label     = "Information about MFA"
+  field_key = "mfa_text"
+  type      = "static"
+  order     = 0
+  required  = true
 
-  sub_text    = <<-MFA_TEXT
+  sub_text = <<-MFA_TEXT
       In the next step, you select a second factor. This can be done either
       with an Authenticator app (a QR code will be displayed which has to be scanned
       with the Authenticator app) or with a WebAuthn device such as a Yubikey.
@@ -426,34 +426,34 @@ resource "authentik_policy_expression" "logout_redirect_if_unauth" {
 
 # Configuration Stage for TOTP Setup
 resource "authentik_stage_authenticator_totp" "totp_setup" {
-  name                      = "jhaas-totp-setup"
-  friendly_name             = "Use Authenticator App"
-  configure_flow            = authentik_flow.totp_setup.uuid
-  digits                    = 6
+  name           = "jhaas-totp-setup"
+  friendly_name  = "Use Authenticator App"
+  configure_flow = authentik_flow.totp_setup.uuid
+  digits         = 6
 }
 
 # Configuration Stage for WebAuthn Setup
 resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
-  name                      = "jhaas-webauthn-setup"
-  friendly_name             = "Use WebAuthn Device"
-  configure_flow            = authentik_flow.webauthn_setup.uuid
+  name           = "jhaas-webauthn-setup"
+  friendly_name  = "Use WebAuthn Device"
+  configure_flow = authentik_flow.webauthn_setup.uuid
 
-  resident_key_requirement  = "preferred"
-  user_verification         = "preferred"
+  resident_key_requirement = "preferred"
+  user_verification        = "preferred"
 }
 
 # Configuration Stage for MFA Static Tokens Setup
 resource "authentik_stage_authenticator_static" "mfa_static_setup" {
-  name                      = "jhaas-mfa-static-setup"
-  friendly_name             = "Recovery Codes"
-  configure_flow            = authentik_flow.mfa_static_setup.uuid
-  token_count               = 6
+  name           = "jhaas-mfa-static-setup"
+  friendly_name  = "Recovery Codes"
+  configure_flow = authentik_flow.mfa_static_setup.uuid
+  token_count    = 6
 }
 
 # Prompt Stage for initial password and password reset
 resource "authentik_stage_prompt" "password_setup" {
-  name                      = "jhaas-password-setup-prompt"
-  fields                    = [
+  name = "jhaas-password-setup-prompt"
+  fields = [
     resource.authentik_stage_prompt_field.setup_password.id,
     resource.authentik_stage_prompt_field.setup_password_repeat.id,
   ]
@@ -461,14 +461,14 @@ resource "authentik_stage_prompt" "password_setup" {
 
 # Write Stage for initial password and password reset
 resource "authentik_stage_user_write" "password_setup" {
-  name                      = "jhaas-password-setup-write"
-  user_creation_mode        = "never_create"
+  name               = "jhaas-password-setup-write"
+  user_creation_mode = "never_create"
 }
 
 # Prompt Stage to show TOS and get acceptance
 resource "authentik_stage_prompt" "enrollment_tos" {
-  name                      = "jhaas-enrollment-tos"
-  fields                    = [
+  name = "jhaas-enrollment-tos"
+  fields = [
     resource.authentik_stage_prompt_field.enrollment_tos_text.id,
     resource.authentik_stage_prompt_field.enrollment_tos_accept.id
   ]
@@ -476,8 +476,8 @@ resource "authentik_stage_prompt" "enrollment_tos" {
 
 # Prompt Stage to get enrollment user details
 resource "authentik_stage_prompt" "enrollment_user" {
-  name                      = "jhaas-enrollment-user"
-  fields                    = [
+  name = "jhaas-enrollment-user"
+  fields = [
     resource.authentik_stage_prompt_field.enrollment_given_name.id,
     resource.authentik_stage_prompt_field.enrollment_family_name.id,
     resource.authentik_stage_prompt_field.enrollment_email.id,
@@ -487,61 +487,61 @@ resource "authentik_stage_prompt" "enrollment_user" {
 
 # Deny Stage for cancelling enrollment
 resource "authentik_stage_deny" "enrollment_cancel" {
-  name                      = "jhaas-enrollment-cancel"
+  name = "jhaas-enrollment-cancel"
 }
 
 # User Write Stage to save user
 resource "authentik_stage_user_write" "enrollment_write" {
-  name                      = "jhaas-enrollment-write"
-  create_users_as_inactive  = true
-  create_users_group        = authentik_group.auth_untrusted.id
-  user_creation_mode        = "always_create"
+  name                     = "jhaas-enrollment-write"
+  create_users_as_inactive = true
+  create_users_group       = authentik_group.auth_untrusted.id
+  user_creation_mode       = "always_create"
 }
 
 # Email Stage for email verification in enrollment
 resource "authentik_stage_email" "enrollment_email" {
-  name                      = "jhaas-enrollment-email"
-  use_global_settings       = true
-  activate_user_on_success  = true
-  subject                   = var.authentik_email_subject_enrollment
-  template                  = var.authentik_email_template_enrollment
-  token_expiry              = 30
+  name                     = "jhaas-enrollment-email"
+  use_global_settings      = true
+  activate_user_on_success = true
+  subject                  = var.authentik_email_subject_enrollment
+  template                 = var.authentik_email_template_enrollment
+  token_expiry             = 30
 }
 
 # Prompt Stage to show information before showing recovery codes
 resource "authentik_stage_prompt" "enrollment_pre_recovery_codes" {
-  name                      = "jhaas-enrollment-pre-recovery-codes"
-  fields                    = [
+  name = "jhaas-enrollment-pre-recovery-codes"
+  fields = [
     resource.authentik_stage_prompt_field.enrollment_recovery_codes_text.id
   ]
 }
 
 # Stage to setup static recovery codes for enrollment
 resource "authentik_stage_authenticator_static" "enrollment_recovery_codes" {
-  name                      = "jhaas-enrollment-recovery-codes"
-  configure_flow            = authentik_flow.mfa_static_setup.uuid
-  friendly_name             = "Static Recovery Codes"
-  token_count               = 6
+  name           = "jhaas-enrollment-recovery-codes"
+  configure_flow = authentik_flow.mfa_static_setup.uuid
+  friendly_name  = "Static Recovery Codes"
+  token_count    = 6
 }
 
 # Prompt Stage to show information before setting up MFA
 resource "authentik_stage_prompt" "enrollment_pre_mfa" {
-  name                      = "jhaas-enrollment-pre-mfa"
-  fields                    = [
+  name = "jhaas-enrollment-pre-mfa"
+  fields = [
     resource.authentik_stage_prompt_field.enrollment_mfa_text.id
   ]
 }
 
 # Stage to validate (in terms of enrollment: setup) mfa
 resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
-  name                        = "jhaas-enrollment-mfa-setup"
-  device_classes              = ["totp", "webauthn"]
+  name           = "jhaas-enrollment-mfa-setup"
+  device_classes = ["totp", "webauthn"]
 
-  not_configured_action       = "configure"
-  webauthn_user_verification  = "required"
-  last_auth_threshold         = "seconds=0"
+  not_configured_action      = "configure"
+  webauthn_user_verification = "required"
+  last_auth_threshold        = "seconds=0"
 
-  configuration_stages        = [
+  configuration_stages = [
     authentik_stage_authenticator_totp.totp_setup.id,
     authentik_stage_authenticator_webauthn.webauthn_setup.id
   ]
@@ -549,10 +549,10 @@ resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
 
 # Login Stage to automatically login user after enrollment
 resource "authentik_stage_user_login" "enrollment_login" {
-  name                      = "jhaas-enrollment-login"
+  name = "jhaas-enrollment-login"
 
-  remember_me_offset        = "seconds=0"
-  session_duration          = "seconds=0"
+  remember_me_offset = "seconds=0"
+  session_duration   = "seconds=0"
 }
 
 # Identification Stage for password recovery
@@ -565,26 +565,26 @@ resource "authentik_stage_identification" "recovery_identification" {
 
 # Email Stage for password recovery
 resource "authentik_stage_email" "recovery_email" {
-  name                      = "jhaas-recovery-email"
-  use_global_settings       = true
-  activate_user_on_success  = true
-  subject                   = var.authentik_email_subject_recovery
-  template                  = var.authentik_email_template_recovery
-  token_expiry              = 30
+  name                     = "jhaas-recovery-email"
+  use_global_settings      = true
+  activate_user_on_success = true
+  subject                  = var.authentik_email_subject_recovery
+  template                 = var.authentik_email_template_recovery
+  token_expiry             = 30
 }
 
 # MFA Stage without Static Codes for Password Recovery
 resource "authentik_stage_authenticator_validate" "recovery_mfa_validation" {
-  name                      = "jhaas-recovery-mfa-validation"
-  device_classes            = ["totp", "webauthn"]
-  not_configured_action     = "deny"
-  last_auth_threshold       = "seconds=0"
+  name                  = "jhaas-recovery-mfa-validation"
+  device_classes        = ["totp", "webauthn"]
+  not_configured_action = "deny"
+  last_auth_threshold   = "seconds=0"
 }
 
 # Prompt stage to get passwords
 resource "authentik_stage_prompt" "recovery_prompt" {
-  name                      = "jhaas-recovery-prompt"
-  fields                    = [
+  name = "jhaas-recovery-prompt"
+  fields = [
     authentik_stage_prompt_field.recovery_password.id,
     authentik_stage_prompt_field.recovery_password_repeat.id
   ]
@@ -592,16 +592,16 @@ resource "authentik_stage_prompt" "recovery_prompt" {
 
 # User write stage for Password Recovery
 resource "authentik_stage_user_write" "recovery_write" {
-  name                      = "jhaas-recovery-write"
-  user_creation_mode        = "never_create"
+  name               = "jhaas-recovery-write"
+  user_creation_mode = "never_create"
 }
 
 # Login after password reset
 resource "authentik_stage_user_login" "recovery_login" {
-  name                      = "jhaas-recovery-login"
+  name = "jhaas-recovery-login"
 
-  remember_me_offset        = "seconds=0"
-  session_duration          = "seconds=0"
+  remember_me_offset = "seconds=0"
+  session_duration   = "seconds=0"
 }
 
 # Password Stage for Authentication
@@ -620,21 +620,21 @@ resource "authentik_stage_identification" "auth_identification" {
   show_matched_user         = false
   show_source_labels        = false
 
-  enrollment_flow           = authentik_flow.enrollment.uuid
-  recovery_flow             = authentik_flow.recovery.uuid
-  password_stage            = authentik_stage_password.auth_password.id
+  enrollment_flow = authentik_flow.enrollment.uuid
+  recovery_flow   = authentik_flow.recovery.uuid
+  password_stage  = authentik_stage_password.auth_password.id
 }
 
 # Stage to validate mfa in Authentication
 resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
-  name                        = "jhaas-auth-mfa-validate"
-  device_classes              = ["totp", "webauthn", "static"]
+  name           = "jhaas-auth-mfa-validate"
+  device_classes = ["totp", "webauthn", "static"]
 
-  not_configured_action       = "configure"
-  webauthn_user_verification  = "preferred"
-  last_auth_threshold         = "seconds=0"
+  not_configured_action      = "configure"
+  webauthn_user_verification = "preferred"
+  last_auth_threshold        = "seconds=0"
 
-  configuration_stages        = [
+  configuration_stages = [
     authentik_stage_authenticator_totp.totp_setup.id,
     authentik_stage_authenticator_webauthn.webauthn_setup.id,
     authentik_stage_authenticator_static.mfa_static_setup.id,
@@ -643,15 +643,15 @@ resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
 
 # Login after successfull authentication
 resource "authentik_stage_user_login" "auth_login" {
-  name                      = "jhaas-auth-login"
+  name = "jhaas-auth-login"
 
-  remember_me_offset        = "seconds=0"
-  session_duration          = "seconds=0"
+  remember_me_offset = "seconds=0"
+  session_duration   = "seconds=0"
 }
 
 # Logout after successfull invalidation
 resource "authentik_stage_user_logout" "logout" {
-  name                      = "jhaas-logout"
+  name = "jhaas-logout"
 }
 
 #
@@ -1073,8 +1073,8 @@ resource "authentik_scope_mapping" "user_attributes" {
 
 # Create a private RSA key to use for self signed authentik certificate
 resource "tls_private_key" "authentik_self_signed" {
-  algorithm   = "RSA"
-  rsa_bits    = 4096
+  algorithm = "RSA"
+  rsa_bits  = 4096
 }
 
 # Create a RSA public key to use for self signed authentik certificate
@@ -1082,10 +1082,10 @@ resource "tls_self_signed_cert" "authentik_self_signed" {
   private_key_pem = tls_private_key.authentik_self_signed.private_key_pem
 
   subject {
-    common_name  = var.authentik_domain
+    common_name = var.authentik_domain
   }
 
-  dns_names = [ var.authentik_domain ]
+  dns_names = [var.authentik_domain]
 
   # 1 year
   validity_period_hours = 8760
@@ -1114,28 +1114,28 @@ resource "authentik_certificate_key_pair" "authentik_self_signed" {
 
 # The JHaaS Portal OAuth Provider
 resource "authentik_provider_oauth2" "portal" {
-  name                        = "jhaas-portal"
+  name = "jhaas-portal"
 
-  client_id                   = var.authentik_jhaas_client_id
-  client_secret               = var.authentik_jhaas_client_secret
-  client_type                 = "confidential"
-  redirect_uris               = [
+  client_id     = var.authentik_jhaas_client_id
+  client_secret = var.authentik_jhaas_client_secret
+  client_type   = "confidential"
+  redirect_uris = [
     local.authentik_provider_redirect_uri
   ]
 
-  signing_key                 = authentik_certificate_key_pair.authentik_self_signed.id
-  sub_mode                    = "user_id"
+  signing_key = authentik_certificate_key_pair.authentik_self_signed.id
+  sub_mode    = "user_id"
 
-  authentication_flow         = authentik_flow.auth.uuid
-  authorization_flow          = authentik_flow.consent.uuid
+  authentication_flow = authentik_flow.auth.uuid
+  authorization_flow  = authentik_flow.consent.uuid
 
-  access_code_validity        = "minutes=1"
-  access_token_validity       = "minutes=5"
-  refresh_token_validity      = "days=30"
-  include_claims_in_id_token  = true
-  issuer_mode                 = "per_provider"
+  access_code_validity       = "minutes=1"
+  access_token_validity      = "minutes=5"
+  refresh_token_validity     = "days=30"
+  include_claims_in_id_token = true
+  issuer_mode                = "per_provider"
 
-  property_mappings           = [
+  property_mappings = [
     authentik_scope_mapping.email.id,
     authentik_scope_mapping.openid.id,
     authentik_scope_mapping.profile.id,
@@ -1153,19 +1153,19 @@ resource "authentik_provider_oauth2" "portal" {
 
 # The JHaaS Portal Application
 resource "authentik_application" "portal" {
-  name                  = "jhaas-portal"
-  slug                  = "portal"
-  protocol_provider     = authentik_provider_oauth2.portal.id
+  name              = "jhaas-portal"
+  slug              = "portal"
+  protocol_provider = authentik_provider_oauth2.portal.id
 
   backchannel_providers = []
   open_in_new_tab       = false
   policy_engine_mode    = "any"
   group                 = ""
 
-  meta_description      = var.authentik_jhaas_slogan
-  meta_icon             = var.authentik_branding_favicon
-  meta_launch_url       = local.authentik_jhaas_launch_url
-  meta_publisher        = var.authentik_branding_publisher
+  meta_description = var.authentik_jhaas_slogan
+  meta_icon        = var.authentik_branding_favicon
+  meta_launch_url  = local.authentik_jhaas_launch_url
+  meta_publisher   = var.authentik_branding_publisher
 }
 
 #
@@ -1177,12 +1177,12 @@ resource "authentik_application" "portal" {
 #
 
 resource "authentik_tenant" "jhaas" {
-  domain              = var.authentik_domain
-  default             = true
+  domain  = var.authentik_domain
+  default = true
 
-  branding_title      = var.authentik_branding_title
-  branding_favicon    = var.authentik_branding_favicon
-  branding_logo       = var.authentik_branding_logo
+  branding_title   = var.authentik_branding_title
+  branding_favicon = var.authentik_branding_favicon
+  branding_logo    = var.authentik_branding_logo
 
   flow_authentication = authentik_flow.auth.uuid
   flow_device_code    = ""
@@ -1191,7 +1191,7 @@ resource "authentik_tenant" "jhaas" {
   flow_unenrollment   = ""
   flow_user_settings  = ""
 
-  web_certificate     = ""
-  event_retention     = "days=365"
-  attributes          = "{}"
+  web_certificate = ""
+  event_retention = "days=365"
+  attributes      = "{}"
 }
