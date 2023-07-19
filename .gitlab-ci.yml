@@ -2,7 +2,7 @@ variables:
   TERRAFORM_MODULE_DIR: ${CI_PROJECT_DIR}
   TERRAFORM_MODULE_NAME: jhaas-authentik-config
   TERRAFORM_MODULE_SYSTEM: local
-  TERRAFORM_MODULE_VERSION: 0.1.0
+  TERRAFORM_MODULE_VERSION: 0.1.1
   TF_IMAGE: hashicorp/terraform
 
 stages:
@@ -26,4 +26,3 @@ tf-package:
     - 'curl --fail-with-body --location --header "JOB-TOKEN: ${CI_JOB_TOKEN}"
          --upload-file /tmp/${TERRAFORM_MODULE_NAME}-${TERRAFORM_MODULE_SYSTEM}-${TERRAFORM_MODULE_VERSION}.tgz
          ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/terraform/modules/${TERRAFORM_MODULE_NAME}/${TERRAFORM_MODULE_SYSTEM}/${TERRAFORM_MODULE_VERSION}/file'
-
