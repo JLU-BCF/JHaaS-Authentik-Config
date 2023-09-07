@@ -1,7 +1,6 @@
 # Configure the terraform provider
 variable "authentik_token" {
   description = "Authentic token that will be used for API calls."
-  default     = "tokentokentokentokentokentokentokentokentokentoken"
 }
 
 # Configure authentik Accessibility
@@ -54,7 +53,6 @@ variable "authentik_jhaas_client_id" {
 
 variable "authentik_jhaas_client_secret" {
   description = "Secret to be set for the jhaas provider."
-  default     = "mysupersecretclientsecretmysupersecretclientsecret"
 }
 
 variable "authentik_provider_redirect_uri" {
