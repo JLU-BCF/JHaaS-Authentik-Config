@@ -31,6 +31,11 @@ resource "authentik_group" "auth_untrusted" {
   name = "auth-untrusted"
 }
 
+# Group to organize jupyterhubs
+resource "authentik_group" "jupyterhubs" {
+  name = "jupyterhubs"
+}
+
 #
 ########################
 #
