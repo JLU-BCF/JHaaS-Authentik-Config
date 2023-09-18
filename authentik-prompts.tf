@@ -69,7 +69,7 @@ resource "authentik_stage_prompt_field" "enrollment_tos_accept" {
   order     = 5
 
   # presence will be checked through policy
-  required  = false
+  required = false
 }
 
 # Setup Given Name field for enrollment

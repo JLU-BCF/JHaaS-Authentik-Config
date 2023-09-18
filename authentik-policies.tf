@@ -19,7 +19,7 @@ resource "authentik_policy_expression" "enrollment_login_redirect" {
 
 # Policy to check if TOS is accepted
 resource "authentik_policy_expression" "enrollment_check_tos" {
-  name = "jhaas-enrollment-check-tos"
+  name              = "jhaas-enrollment-check-tos"
   execution_logging = true
   expression        = <<-CHECK_TOS
       check_tos = request.context.get("prompt_data").get("tos_accept")
