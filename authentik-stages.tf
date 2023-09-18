@@ -52,7 +52,11 @@ resource "authentik_stage_prompt" "enrollment_tos" {
   name = "jhaas-enrollment-tos"
   fields = [
     resource.authentik_stage_prompt_field.enrollment_tos_text.id,
-    resource.authentik_stage_prompt_field.enrollment_tos_accept.id
+    resource.authentik_stage_prompt_field.enrollment_tos_accept.id,
+    resource.authentik_stage_prompt_field.back_to_login.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.enrollment_check_tos.id
   ]
 }
 
@@ -63,13 +67,13 @@ resource "authentik_stage_prompt" "enrollment_user" {
     resource.authentik_stage_prompt_field.enrollment_given_name.id,
     resource.authentik_stage_prompt_field.enrollment_family_name.id,
     resource.authentik_stage_prompt_field.enrollment_email.id,
-    resource.authentik_stage_prompt_field.enrollment_password.id
+    resource.authentik_stage_prompt_field.enrollment_password.id,
+    resource.authentik_stage_prompt_field.back_to_login.id
   ]
-}
-
-# Deny Stage for cancelling enrollment
-resource "authentik_stage_deny" "enrollment_cancel" {
-  name = "jhaas-enrollment-cancel"
+  validation_policies = [
+    resource.authentik_policy_expression.enrollment_check_username.id,
+    resource.authentik_policy_expression.enrollment_map_attributes.id
+  ]
 }
 
 # User Write Stage to save user
@@ -143,6 +147,10 @@ resource "authentik_stage_identification" "recovery_identification" {
   user_fields               = ["email"]
   case_insensitive_matching = true
   show_matched_user         = false
+  show_source_labels        = false
+
+  enrollment_flow = authentik_flow.enrollment.uuid
+  recovery_flow   = authentik_flow.recovery.uuid
 }
 
 # Email Stage for password recovery

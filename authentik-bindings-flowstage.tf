@@ -83,17 +83,6 @@ resource "authentik_flow_stage_binding" "enrollment_2_enrollment_user" {
   evaluate_on_plan        = false
 }
 
-# Binds Deny Stage to Enrollment Flow
-resource "authentik_flow_stage_binding" "enrollment_2_enrollment_cancel" {
-  target                  = authentik_flow.enrollment.uuid
-  stage                   = authentik_stage_deny.enrollment_cancel.id
-  order                   = 25
-  invalid_response_action = "retry"
-  policy_engine_mode      = "any"
-  re_evaluate_policies    = true
-  evaluate_on_plan        = false
-}
-
 # Binds User Write Stage to Enrollment Flow
 resource "authentik_flow_stage_binding" "enrollment_2_enrollment_write" {
   target                  = authentik_flow.enrollment.uuid

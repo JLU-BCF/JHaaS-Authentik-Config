@@ -17,6 +17,21 @@ resource "authentik_policy_expression" "enrollment_login_redirect" {
   LOGIN_REDIRECT
 }
 
+# Policy to check if TOS is accepted
+resource "authentik_policy_expression" "enrollment_check_tos" {
+  name = "jhaas-enrollment-check-tos"
+  execution_logging = true
+  expression        = <<-CHECK_TOS
+      check_tos = request.context.get("prompt_data").get("tos_accept")
+
+      if not check_tos:
+        ak_message("Please accept the terms of service to continue.")
+        return False
+
+      return True
+  CHECK_TOS
+}
+
 # Policy to check if username is available
 resource "authentik_policy_expression" "enrollment_check_username" {
   name              = "jhaas-enrollment-check-username"

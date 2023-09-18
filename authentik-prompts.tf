@@ -6,6 +6,20 @@
 ########################
 #
 
+# Setup common back-to-login text field
+resource "authentik_stage_prompt_field" "back_to_login" {
+  name      = "jhaas-back-to-login"
+  label     = "Back to login"
+  field_key = "back_to_login"
+  type      = "static"
+  order     = 1000
+  required  = true
+
+  sub_text = <<-BTL_TEXT
+      &lt; back to <a href="${var.authentik_jhaas_login_flow}">login</a>
+  BTL_TEXT
+}
+
 # Setup Password field for initial password setup and password reset
 resource "authentik_stage_prompt_field" "setup_password" {
   name        = "jhaas-setup-password"
@@ -53,7 +67,9 @@ resource "authentik_stage_prompt_field" "enrollment_tos_accept" {
   field_key = "tos_accept"
   type      = "checkbox"
   order     = 5
-  required  = true
+
+  # presence will be checked through policy
+  required  = false
 }
 
 # Setup Given Name field for enrollment
