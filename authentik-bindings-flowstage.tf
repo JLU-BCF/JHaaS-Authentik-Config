@@ -157,7 +157,18 @@ resource "authentik_flow_stage_binding" "enrollment_2_enrollment_login" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
+}
+
+# Binds Redirect Info Stage to Enrollment Flow
+resource "authentik_flow_stage_binding" "enrollment_2_enrollment_redirect_info" {
+  target                  = authentik_flow.enrollment.uuid
+  stage                   = authentik_stage_prompt.enrollment_redirect_info.id
+  order                   = 80
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
 }
 
 # Binds Identification Stage to Recovery Flow

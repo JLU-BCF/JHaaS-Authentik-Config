@@ -149,6 +149,20 @@ resource "authentik_stage_prompt_field" "enrollment_mfa_text" {
   MFA_TEXT
 }
 
+# Setup Redirect Text field for enrollment
+resource "authentik_stage_prompt_field" "enrollment_redirect_info" {
+  name      = "jhaas-enrollment-redirect-info"
+  label     = "Redirect Info"
+  field_key = "redirect_info"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  sub_text = <<-MFA_TEXT
+      Registration completed. You will now be redirected.
+  MFA_TEXT
+}
+
 # Setup Password Prompt field for password recovery
 resource "authentik_stage_prompt_field" "recovery_password" {
   name        = "jhaas-recovery-password"

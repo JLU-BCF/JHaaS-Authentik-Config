@@ -7,9 +7,19 @@
 #
 
 # Binds Login Redirect Policy to enrollment_2_enrollment_login binding
-resource "authentik_policy_binding" "enrollment_login_redirect_2_enrollment" {
-  target  = authentik_flow_stage_binding.enrollment_2_enrollment_login.id
-  policy  = authentik_policy_expression.enrollment_login_redirect.id
+# resource "authentik_policy_binding" "enrollment_login_redirect_2_enrollment" {
+#   target  = authentik_flow_stage_binding.enrollment_2_enrollment_login.id
+#   policy  = authentik_policy_expression.enrollment_login_redirect.id
+#   order   = 0
+#   enabled = true
+#   negate  = false
+#   timeout = 30
+# }
+
+# Binds Forced Login Redirect Policy to enrollment_2_enrollment_redirect_info binding
+resource "authentik_policy_binding" "enrollment_force_login_redirect_2_enrollment" {
+  target  = authentik_flow_stage_binding.enrollment_2_enrollment_redirect_info.id
+  policy  = authentik_policy_expression.enrollment_force_login_redirect.id
   order   = 0
   enabled = true
   negate  = false

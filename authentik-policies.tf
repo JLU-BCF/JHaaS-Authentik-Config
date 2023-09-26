@@ -8,13 +8,27 @@
 
 # Policy to set login redirect for jhaas as it gets lost in enrollment flow
 # when user navigates away to confirm the email address
-resource "authentik_policy_expression" "enrollment_login_redirect" {
-  name              = "jhaas-enrollment-login-redirect"
+# resource "authentik_policy_expression" "enrollment_login_redirect" {
+#   name              = "jhaas-enrollment-login-redirect"
+#   execution_logging = true
+#   expression        = <<-LOGIN_REDIRECT
+#       context['flow_plan'].context['redirect'] = "${local.authentik_jhaas_login_redirect}"
+#       return True
+#   LOGIN_REDIRECT
+# }
+
+# Policy to immediatly force login redirect for jhaas
+resource "authentik_policy_expression" "enrollment_force_login_redirect" {
+  name              = "jhaas-enrollment-force-login-redirect"
   execution_logging = true
-  expression        = <<-LOGIN_REDIRECT
-      context['flow_plan'].context['redirect'] = "${local.authentik_jhaas_login_redirect}"
-      return True
-  LOGIN_REDIRECT
+  expression        = <<-FORCE_LOGIN_REDIRECT
+      plan = request.context.get("flow_plan")
+      if not plan:
+        return False
+
+      plan.redirect("${local.authentik_jhaas_login_redirect}")
+      return False
+  FORCE_LOGIN_REDIRECT
 }
 
 # Policy to check if TOS is accepted
@@ -68,6 +82,26 @@ resource "authentik_policy_expression" "enrollment_map_attributes" {
 
       return True
   MAP_ATTRIBUTES
+}
+
+# Check password policy
+resource "authentik_policy_password" "enrollment_check_password" {
+  name = "jhaas-enrollment-check-password"
+  execution_logging = true
+
+  password_field = "password"
+  length_min  = 12
+  error_message = "The password must be at least 12 characters long."
+
+  amount_digits       = 0
+  amount_lowercase    = 0
+  amount_symbols      = 0
+  amount_uppercase    = 0
+
+  check_have_i_been_pwned = false
+  check_static_rules      = true
+  check_zxcvbn            = true
+  zxcvbn_score_threshold  = 2
 }
 
 # Policy to check if this is a restored session

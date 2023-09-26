@@ -72,7 +72,8 @@ resource "authentik_stage_prompt" "enrollment_user" {
   ]
   validation_policies = [
     resource.authentik_policy_expression.enrollment_check_username.id,
-    resource.authentik_policy_expression.enrollment_map_attributes.id
+    resource.authentik_policy_expression.enrollment_map_attributes.id,
+    resource.authentik_policy_password.enrollment_check_password.id
   ]
 }
 
@@ -139,6 +140,14 @@ resource "authentik_stage_user_login" "enrollment_login" {
 
   remember_me_offset = "seconds=0"
   session_duration   = "seconds=0"
+}
+
+# Prompt Stage after Login to initiate redirect
+resource "authentik_stage_prompt" "enrollment_redirect_info" {
+  name = "jhaas-enrollment-redirect-info"
+  fields = [
+    resource.authentik_stage_prompt_field.enrollment_redirect_info.id
+  ]
 }
 
 # Identification Stage for password recovery
