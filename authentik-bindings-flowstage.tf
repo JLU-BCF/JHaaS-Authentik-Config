@@ -117,9 +117,9 @@ resource "authentik_flow_stage_binding" "enrollment_2_enrollment_pre_recovery_co
 }
 
 # Binds Recovery Codes Stage to Enrollment Flow
-resource "authentik_flow_stage_binding" "enrollment_2_enrollment_recovery_codes" {
+resource "authentik_flow_stage_binding" "enrollment_2_mfa_static_setup" {
   target                  = authentik_flow.enrollment.uuid
-  stage                   = authentik_stage_authenticator_static.enrollment_recovery_codes.id
+  stage                   = authentik_stage_authenticator_static.mfa_static_setup.id
   order                   = 50
   invalid_response_action = "retry"
   policy_engine_mode      = "any"

@@ -106,14 +106,6 @@ resource "authentik_stage_prompt" "enrollment_pre_recovery_codes" {
   ]
 }
 
-# Stage to setup static recovery codes for enrollment
-resource "authentik_stage_authenticator_static" "enrollment_recovery_codes" {
-  name           = "jhaas-enrollment-recovery-codes"
-  configure_flow = authentik_flow.mfa_static_setup.uuid
-  friendly_name  = "Static Recovery Codes"
-  token_count    = 6
-}
-
 # Prompt Stage to show information before setting up MFA
 resource "authentik_stage_prompt" "enrollment_pre_mfa" {
   name = "jhaas-enrollment-pre-mfa"
