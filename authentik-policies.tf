@@ -85,8 +85,8 @@ resource "authentik_policy_expression" "enrollment_map_attributes" {
 }
 
 # Check password policy
-resource "authentik_policy_password" "enrollment_check_password" {
-  name = "jhaas-enrollment-check-password"
+resource "authentik_policy_password" "global_check_password" {
+  name = "jhaas-global-check-password"
   execution_logging = true
 
   password_field = "password"

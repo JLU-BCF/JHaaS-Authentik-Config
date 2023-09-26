@@ -39,6 +39,9 @@ resource "authentik_stage_prompt" "password_setup" {
     resource.authentik_stage_prompt_field.setup_password.id,
     resource.authentik_stage_prompt_field.setup_password_repeat.id,
   ]
+  validation_policies = [
+    resource.authentik_policy_password.global_check_password.id
+  ]
 }
 
 # Write Stage for initial password and password reset
@@ -73,7 +76,7 @@ resource "authentik_stage_prompt" "enrollment_user" {
   validation_policies = [
     resource.authentik_policy_expression.enrollment_check_username.id,
     resource.authentik_policy_expression.enrollment_map_attributes.id,
-    resource.authentik_policy_password.enrollment_check_password.id
+    resource.authentik_policy_password.global_check_password.id
   ]
 }
 
@@ -186,6 +189,9 @@ resource "authentik_stage_prompt" "recovery_prompt" {
   fields = [
     authentik_stage_prompt_field.recovery_password.id,
     authentik_stage_prompt_field.recovery_password_repeat.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_password.global_check_password.id
   ]
 }
 
