@@ -8,16 +8,16 @@
 
 # Configuration Stage for TOTP Setup
 resource "authentik_stage_authenticator_totp" "totp_setup" {
-  name           = "jhaas-totp-setup"
-  friendly_name  = "Use Authenticator App"
+  name           = "📱 Setup Authenticator App"
+  friendly_name  = "📱 Authenticator App"
   configure_flow = authentik_flow.totp_setup.uuid
   digits         = 6
 }
 
 # Configuration Stage for WebAuthn Setup
 resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
-  name           = "jhaas-webauthn-setup"
-  friendly_name  = "Use WebAuthn Device"
+  name           = "🛡️ Setup Security Device"
+  friendly_name  = "🛡️ Security Device"
   configure_flow = authentik_flow.webauthn_setup.uuid
 
   resident_key_requirement = "preferred"
@@ -26,8 +26,8 @@ resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
 
 # Configuration Stage for MFA Static Tokens Setup
 resource "authentik_stage_authenticator_static" "mfa_static_setup" {
-  name           = "jhaas-mfa-static-setup"
-  friendly_name  = "Recovery Codes"
+  name           = "🔑 Create Recovery Codes"
+  friendly_name  = "🔑 Recovery Codes"
   configure_flow = authentik_flow.mfa_static_setup.uuid
   token_count    = 6
 }
