@@ -86,17 +86,17 @@ resource "authentik_policy_expression" "enrollment_map_attributes" {
 
 # Check password policy
 resource "authentik_policy_password" "global_check_password" {
-  name = "jhaas-global-check-password"
+  name              = "jhaas-global-check-password"
   execution_logging = true
 
   password_field = "password"
-  length_min  = 12
-  error_message = "The password must be at least 12 characters long."
+  length_min     = 12
+  error_message  = "The password must be at least 12 characters long."
 
-  amount_digits       = 0
-  amount_lowercase    = 0
-  amount_symbols      = 0
-  amount_uppercase    = 0
+  amount_digits    = 0
+  amount_lowercase = 0
+  amount_symbols   = 0
+  amount_uppercase = 0
 
   check_have_i_been_pwned = false
   check_static_rules      = true
