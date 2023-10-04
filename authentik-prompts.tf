@@ -55,15 +55,15 @@ resource "authentik_stage_prompt_field" "enrollment_tos_text" {
       You are about to create an account for JHaaS. This is a prototype and
       we do not assume any liability or warranty for anything. Your data will not
       be shared with any third party and will be completely removed once the prototype
-      stage is over. Read the <a target="_blank" href="${local.authentik_tos_url}">terms
-      of use.</a>
+      stage is over. Read the <a target="_blank" onclick="window.open(this.href, '_blank', 'resizable=yes,height=600,width=460'); return false;" href="${local.authentik_tos_url}">terms
+      of service and privacy policy.</a>
   TOS_TEXT
 }
 
 # Setup TOS acceptance field for enrollment
 resource "authentik_stage_prompt_field" "enrollment_tos_accept" {
   name      = "jhaas-enrollment-tos-accept"
-  label     = "I accept the terms of service"
+  label     = "I accept the terms of service and privacy policy"
   field_key = "tos_accept"
   type      = "checkbox"
   order     = 5

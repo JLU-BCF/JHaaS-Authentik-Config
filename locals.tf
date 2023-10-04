@@ -9,7 +9,7 @@ locals {
 
   authentik_provider_redirect_uri = var.authentik_provider_redirect_uri != null ? var.authentik_provider_redirect_uri : "${local.jhaas_url}/api/auth/oidc/cb"
 
-  authentik_tos_url               = var.authentik_tos_url != null ? var.authentik_tos_url : "${local.jhaas_url}/tos"
+  authentik_tos_url               = var.authentik_tos_url != null ? var.authentik_tos_url : "${local.jhaas_url}/tos/latest.html"
   authentik_jhaas_login_redirect  = var.authentik_jhaas_login_redirect != null ? var.authentik_jhaas_login_redirect : "${local.jhaas_url}/api/auth/oidc/cb"
   authentik_jhaas_verify_redirect = var.authentik_jhaas_verify_redirect != null ? var.authentik_jhaas_verify_redirect : "${local.jhaas_url}/verify"
   authentik_jhaas_launch_url      = var.authentik_jhaas_launch_url != null ? var.authentik_jhaas_launch_url : "${local.jhaas_url}/api/auth/oidc/login"
