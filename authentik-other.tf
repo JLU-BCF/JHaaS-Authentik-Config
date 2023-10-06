@@ -219,5 +219,13 @@ resource "authentik_tenant" "jhaas" {
 
   web_certificate = ""
   event_retention = "days=365"
-  attributes      = "{}"
+  attributes      = jsonencode(
+    {
+      settings = {
+        theme = {
+          base = "light"
+        }
+      }
+    }
+  )
 }
