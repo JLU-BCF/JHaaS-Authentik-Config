@@ -84,6 +84,33 @@ resource "authentik_policy_expression" "enrollment_map_attributes" {
   MAP_ATTRIBUTES
 }
 
+# Policy to check mail domain validity
+resource "authentik_policy_expression" "enrollment_check_mail_domain" {
+  name              = "jhaas-enrollment-check-mail-domain"
+  execution_logging = true
+  expression        = <<-CHECK_MAIL_DOMAIN
+      socket = __import__('socket')
+
+      email = context['prompt_data']['email']
+      domain = email.split('@')[1]
+
+      try:
+        addr = socket.getaddrinfo(domain, None)
+        if addr and addr[0]:
+          return True
+      except:
+        pass
+
+      ak_message((
+        'Oops - something seems to be wrong with your email address!'
+        '\n'
+        'Domain could not be resolved: {domain}'
+      ).format(domain=domain))
+
+      return False
+  CHECK_MAIL_DOMAIN
+}
+
 # Check password policy
 resource "authentik_policy_password" "global_check_password" {
   name              = "jhaas-global-check-password"

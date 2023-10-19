@@ -75,6 +75,7 @@ resource "authentik_stage_prompt" "enrollment_user" {
   ]
   validation_policies = [
     resource.authentik_policy_expression.enrollment_check_username.id,
+    resource.authentik_policy_expression.enrollment_check_mail_domain.id,
     resource.authentik_policy_expression.enrollment_map_attributes.id,
     resource.authentik_policy_password.global_check_password.id
   ]
