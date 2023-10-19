@@ -6,6 +6,12 @@
 ########################
 #
 
+# Group to identify the admins
+resource "authentik_group" "admins" {
+  name         = "admins"
+  is_superuser = true
+}
+
 # Group to identify the government
 resource "authentik_group" "portal_admins" {
   name = "portal-admins"
@@ -75,6 +81,7 @@ resource "authentik_scope_mapping" "profile" {
           "preferred_username": request.user.email,
           "nickname": request.user.attributes.get("given_name", request.user.name),
           "groups": [group.name for group in request.user.ak_groups.all()],
+          "external_id": str(request.user.uuid),
 }
   SCOPE_PROFILE
 }
@@ -219,7 +226,7 @@ resource "authentik_tenant" "jhaas" {
 
   web_certificate = ""
   event_retention = "days=365"
-  attributes      = jsonencode(
+  attributes = jsonencode(
     {
       settings = {
         theme = {
