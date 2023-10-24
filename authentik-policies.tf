@@ -89,14 +89,14 @@ resource "authentik_policy_expression" "enrollment_check_mail_domain" {
   name              = "jhaas-enrollment-check-mail-domain"
   execution_logging = true
   expression        = <<-CHECK_MAIL_DOMAIN
-      socket = __import__('socket')
+      dns = __import__('dns.resolver')
 
       email = context['prompt_data']['email']
       domain = email.split('@')[1]
 
       try:
-        addr = socket.getaddrinfo(domain, None)
-        if addr and addr[0]:
+        records = dns.resolver.query(domain, 'MX')
+        if records and records[0].exchange:
           return True
       except:
         pass
@@ -104,7 +104,7 @@ resource "authentik_policy_expression" "enrollment_check_mail_domain" {
       ak_message((
         'Oops - something seems to be wrong with your email address!'
         '\n'
-        'Domain could not be resolved: {domain}'
+        'Could not find Mail Server for Domain: {domain}'
       ).format(domain=domain))
 
       return False
