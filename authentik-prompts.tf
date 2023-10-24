@@ -51,7 +51,7 @@ resource "authentik_stage_prompt_field" "enrollment_tos_text" {
   order     = 0
   required  = true
 
-  sub_text = <<-TOS_TEXT
+  initial_value = <<-TOS_TEXT
       You are about to create an account for JHaaS. This is currently in the evaluation phase and
       we do not assume any liability or warranty for anything. Your data will not
       be shared with any third party and will be completely removed once the evaluation phase
@@ -118,19 +118,31 @@ resource "authentik_stage_prompt_field" "enrollment_password" {
 
 # Setup Pre Recovery Codes Text field for enrollment
 resource "authentik_stage_prompt_field" "enrollment_recovery_codes_text" {
-  name      = "jhaas-enrollment-revocery-codes-text"
+  name      = "jhaas-enrollment-recovery-codes-text"
   label     = "Information about recovery codes"
-  field_key = "revocery_codes_text"
+  field_key = "recovery_codes_text"
   type      = "static"
   order     = 0
   required  = true
 
-  sub_text = <<-TOKEN_TEXT
+  initial_value = <<-TOKEN_TEXT
       The next step is to set up multi-factor authentication. First, static
       recovery tokens are generated for you. It is important to keep these tokens
       safe (e.g. print them out) to be able to reset the account in case a second
       factor is lost.
   TOKEN_TEXT
+}
+
+# Setup Info about Loss of Recovery Codes acceptance field for enrollment
+resource "authentik_stage_prompt_field" "enrollment_recovery_codes_accept" {
+  name      = "jhaas-enrollment-recovery-codes-accept"
+  label     = "I understand that the loss of these recovery tokens may result in a permanent lockout from my account"
+  field_key = "recovery_codes_accept"
+  type      = "checkbox"
+  order     = 5
+
+  # presence will be checked through policy
+  required = false
 }
 
 # Setup Pre MFA Setup Text field for enrollment
@@ -142,7 +154,7 @@ resource "authentik_stage_prompt_field" "enrollment_mfa_text" {
   order     = 0
   required  = true
 
-  sub_text = <<-MFA_TEXT
+  initial_value = <<-MFA_TEXT
       In the next step, you select a second factor. This can be done either
       with an Authenticator app (a QR code will be displayed which has to be scanned
       with the Authenticator app) or with a WebAuthn device such as a Yubikey.
@@ -158,7 +170,7 @@ resource "authentik_stage_prompt_field" "enrollment_redirect_info" {
   order     = 0
   required  = true
 
-  sub_text = <<-MFA_TEXT
+  initial_value = <<-MFA_TEXT
       Registration completed. You will now be redirected.
   MFA_TEXT
 }

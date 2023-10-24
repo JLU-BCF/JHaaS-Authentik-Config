@@ -30,6 +30,7 @@ resource "authentik_stage_authenticator_static" "mfa_static_setup" {
   friendly_name  = "🔑 Recovery Codes"
   configure_flow = authentik_flow.mfa_static_setup.uuid
   token_count    = 6
+  token_length   = 8
 }
 
 # Prompt Stage for initial password and password reset
@@ -103,7 +104,11 @@ resource "authentik_stage_email" "enrollment_email" {
 resource "authentik_stage_prompt" "enrollment_pre_recovery_codes" {
   name = "jhaas-enrollment-pre-recovery-codes"
   fields = [
-    resource.authentik_stage_prompt_field.enrollment_recovery_codes_text.id
+    resource.authentik_stage_prompt_field.enrollment_recovery_codes_text.id,
+    resource.authentik_stage_prompt_field.enrollment_recovery_codes_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.enrollment_check_recovery_codes_accept.id
   ]
 }
 

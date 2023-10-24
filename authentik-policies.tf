@@ -46,6 +46,21 @@ resource "authentik_policy_expression" "enrollment_check_tos" {
   CHECK_TOS
 }
 
+# Policy to check if Info about Loss of Recovery Codes is accepted
+resource "authentik_policy_expression" "enrollment_check_recovery_codes_accept" {
+  name              = "jhaas-enrollment-check-recovery-codes-accept"
+  execution_logging = true
+  expression        = <<-CHECK_RECOVERY_CODES_ACCEPT
+      check_recovery_codes_accept = request.context.get("prompt_data").get("recovery_codes_accept")
+
+      if not check_recovery_codes_accept:
+        ak_message("Please confirm that you understand the consequences of losing your recovery codes.")
+        return False
+
+      return True
+  CHECK_RECOVERY_CODES_ACCEPT
+}
+
 # Policy to check if username is available
 resource "authentik_policy_expression" "enrollment_check_username" {
   name              = "jhaas-enrollment-check-username"
