@@ -49,8 +49,8 @@ resource "authentik_stage_authenticator_validate" "mfa_validation" {
 }
 
 # Stage for MFA recovery
-resource "authentik_stage_authenticator_validate" "mfa_recovery" {
-  name           = "jhaas-mfa-recovery"
+resource "authentik_stage_authenticator_validate" "mfa_recovery_validation" {
+  name           = "jhaas-mfa-recovery-validation"
   device_classes = ["static"]
 
   not_configured_action = "deny"
@@ -129,10 +129,10 @@ resource "authentik_stage_prompt" "enrollment_pre_recovery_codes" {
   name = "jhaas-enrollment-pre-recovery-codes"
   fields = [
     resource.authentik_stage_prompt_field.enrollment_recovery_codes_text.id,
-    resource.authentik_stage_prompt_field.enrollment_recovery_codes_accept.id
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
   ]
   validation_policies = [
-    resource.authentik_policy_expression.enrollment_check_recovery_codes_accept.id
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id
   ]
 }
 
@@ -206,6 +206,37 @@ resource "authentik_stage_user_login" "recovery_login" {
 
   remember_me_offset = "seconds=0"
   session_duration   = "seconds=0"
+}
+
+# Email Stage for mfa recovery
+resource "authentik_stage_email" "mfa_recovery_email" {
+  name                     = "jhaas-mfa-recovery-email"
+  use_global_settings      = true
+  activate_user_on_success = true
+  subject                  = "Reset MFA for your Account"
+  template                 = var.authentik_email_template_recovery
+  token_expiry             = 30
+}
+
+# Prompt Stage with reset text for mfa recovery
+resource "authentik_stage_prompt" "mfa_recovery_reset_text" {
+  name = "jhaas-mfa-recovery-reset-text"
+  fields = [
+    resource.authentik_stage_prompt_field.mfa_recovery_reset_text.id,
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id,
+    resource.authentik_policy_expression.drop_mfa_devices.id
+  ]
+}
+
+# Prompt Stage for mfa recovery success
+resource "authentik_stage_prompt" "mfa_recovery_success" {
+  name = "jhaas-mfa-recovery-success"
+  fields = [
+    resource.authentik_stage_prompt_field.mfa_recovery_success.id,
+  ]
 }
 
 # Password Stage for Authentication

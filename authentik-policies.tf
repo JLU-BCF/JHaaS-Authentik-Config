@@ -47,10 +47,10 @@ resource "authentik_policy_expression" "enrollment_check_tos" {
 }
 
 # Policy to check if Info about Loss of Recovery Codes is accepted
-resource "authentik_policy_expression" "enrollment_check_recovery_codes_accept" {
-  name              = "jhaas-enrollment-check-recovery-codes-accept"
+resource "authentik_policy_expression" "check_recovery_codes_warning_accept" {
+  name              = "jhaas-check-recovery-codes-warning-accept"
   execution_logging = true
-  expression        = <<-CHECK_RECOVERY_CODES_ACCEPT
+  expression        = <<-CHECK_RECOVERY_CODES_WARNING_ACCEPT
       check_recovery_codes_accept = request.context.get("prompt_data").get("recovery_codes_accept")
 
       if not check_recovery_codes_accept:
@@ -58,7 +58,29 @@ resource "authentik_policy_expression" "enrollment_check_recovery_codes_accept" 
         return False
 
       return True
-  CHECK_RECOVERY_CODES_ACCEPT
+  CHECK_RECOVERY_CODES_WARNING_ACCEPT
+}
+
+# Policy to drop all MFA devices
+resource "authentik_policy_expression" "drop_mfa_devices" {
+  name              = "jhaas-drop-mfa-devices"
+  execution_logging = true
+  expression        = <<-DROP_MFA_DEVICES
+      from authentik.stages.authenticator import devices_for_user
+
+      try:
+        for device in devices_for_user(request.user):
+          device_class = device.__class__.__name__.lower().replace("device", "")
+          ak_logger.info("next delete: {device_class}.".format(device_class=device_class))
+          device.delete()
+          ak_logger.info("deleted: {device_class}.".format(device_class=device_class))
+        return True
+      except Exception as e:
+        ak_logger.warning(str(e))
+
+      ak_message('Something went wrong. Please contact administrator.')
+      return False
+  DROP_MFA_DEVICES
 }
 
 # Policy to check if username is available
@@ -146,14 +168,14 @@ resource "authentik_policy_password" "global_check_password" {
   zxcvbn_score_threshold  = 2
 }
 
-# Policy to check if this is a restored session
-resource "authentik_policy_expression" "recovery_skip_if_restored" {
-  name              = "jhaas-recovery-skip-if-restored"
-  execution_logging = true
-  expression        = <<-SKIP_IF_RESTORED
-      return bool(request.context.get('is_restored', True))
-  SKIP_IF_RESTORED
-}
+# # Policy to check if this is a restored session
+# resource "authentik_policy_expression" "recovery_skip_if_restored" {
+#   name              = "jhaas-recovery-skip-if-restored"
+#   execution_logging = true
+#   expression        = <<-SKIP_IF_RESTORED
+#       return bool(request.context.get('is_restored', True))
+#   SKIP_IF_RESTORED
+# }
 
 # Policy to set redirect url
 resource "authentik_policy_expression" "logout_set_redirect_url" {

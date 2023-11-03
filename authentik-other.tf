@@ -82,7 +82,7 @@ resource "authentik_scope_mapping" "profile" {
           "nickname": request.user.attributes.get("given_name", request.user.name),
           "groups": [group.name for group in request.user.ak_groups.all()],
           "external_id": str(request.user.uuid),
-}
+      }
   SCOPE_PROFILE
 }
 
