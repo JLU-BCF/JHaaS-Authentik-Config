@@ -139,9 +139,9 @@ resource "authentik_flow_stage_binding" "enrollment_2_enrollment_pre_mfa" {
 }
 
 # Binds MFA Setup Stage to Enrollment Flow
-resource "authentik_flow_stage_binding" "enrollment_2_enrollment_mfa_setup" {
+resource "authentik_flow_stage_binding" "enrollment_2_mfa_validation" {
   target                  = authentik_flow.enrollment.uuid
-  stage                   = authentik_stage_authenticator_validate.enrollment_mfa_setup.id
+  stage                   = authentik_stage_authenticator_validate.mfa_validation.id
   order                   = 60
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
@@ -194,9 +194,9 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_email" {
 }
 
 # Binds MFA Validation Stage to Recovery Flow
-resource "authentik_flow_stage_binding" "recovery_2_recovery_mfa_validation" {
+resource "authentik_flow_stage_binding" "recovery_2_mfa_validation" {
   target                  = authentik_flow.recovery.uuid
-  stage                   = authentik_stage_authenticator_validate.recovery_mfa_validation.id
+  stage                   = authentik_stage_authenticator_validate.mfa_validation.id
   order                   = 30
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
@@ -237,6 +237,72 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_login" {
   evaluate_on_plan        = true
 }
 
+# Binds Identification Stage to MFA Recovery Flow
+resource "authentik_flow_stage_binding" "mfa_recovery_2_auth_identification" {
+  target                  = authentik_flow.mfa_recovery.uuid
+  stage                   = authentik_stage_identification.auth_identification.id
+  order                   = 10
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = true
+}
+
+# Binds MFA Recovery Stage to MFA Recovery Flow
+resource "authentik_flow_stage_binding" "mfa_recovery_2_mfa_recovery" {
+  target                  = authentik_flow.mfa_recovery.uuid
+  stage                   = authentik_stage_authenticator_validate.mfa_recovery.id
+  order                   = 30
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds Pre Recovery Codes Stage to MFA Recovery Flow
+resource "authentik_flow_stage_binding" "mfa_recovery_2_enrollment_pre_recovery_codes" {
+  target                  = authentik_flow.mfa_recovery.uuid
+  stage                   = authentik_stage_prompt.enrollment_pre_recovery_codes.id
+  order                   = 45
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds Recovery Codes Stage to MFA Recovery Flow
+resource "authentik_flow_stage_binding" "mfa_recovery_2_mfa_static_setup" {
+  target                  = authentik_flow.mfa_recovery.uuid
+  stage                   = authentik_stage_authenticator_static.mfa_static_setup.id
+  order                   = 50
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds Pre MFA Stage to MFA Recovery Flow
+resource "authentik_flow_stage_binding" "mfa_recovery_2_enrollment_pre_mfa" {
+  target                  = authentik_flow.mfa_recovery.uuid
+  stage                   = authentik_stage_prompt.enrollment_pre_mfa.id
+  order                   = 55
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds MFA Setup Stage to MFA Recovery Flow
+resource "authentik_flow_stage_binding" "mfa_recovery_2_mfa_validation" {
+  target                  = authentik_flow.mfa_recovery.uuid
+  stage                   = authentik_stage_authenticator_validate.mfa_validation.id
+  order                   = 60
+  invalid_response_action = "retry"
+  policy_engine_mode      = "any"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
 # Binds Identification Stage to Auth Flow
 resource "authentik_flow_stage_binding" "auth_2_auth_identification" {
   target                  = authentik_flow.auth.uuid
@@ -249,9 +315,9 @@ resource "authentik_flow_stage_binding" "auth_2_auth_identification" {
 }
 
 # Binds MFA Validation Stage to Auth Flow
-resource "authentik_flow_stage_binding" "auth_2_auth_mfa_validate" {
+resource "authentik_flow_stage_binding" "auth_2_mfa_validation" {
   target                  = authentik_flow.auth.uuid
-  stage                   = authentik_stage_authenticator_validate.auth_mfa_validate.id
+  stage                   = authentik_stage_authenticator_validate.mfa_validation.id
   order                   = 20
   invalid_response_action = "retry"
   policy_engine_mode      = "any"

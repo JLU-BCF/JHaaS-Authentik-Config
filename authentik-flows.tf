@@ -90,6 +90,20 @@ resource "authentik_flow" "recovery" {
   background         = var.authentik_flow_background
 }
 
+# Flow to reset MFA
+resource "authentik_flow" "mfa_recovery" {
+  name               = "jhaas-mfa-recovery"
+  title              = "Reset Multi-Factor Authentication"
+  slug               = "mfa-recovery"
+  designation        = "recovery"
+  authentication     = "require_unauthenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
+}
+
 # Flow to authenticate user
 resource "authentik_flow" "auth" {
   name               = "jhaas-auth"
