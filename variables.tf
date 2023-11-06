@@ -130,3 +130,11 @@ variable "authentik_email_subject_recovery" {
 variable "authentik_email_template_recovery" {
   default = "email/password_reset.html"
 }
+
+variable "authentik_email_subject_mfa_recovery" {
+  default = "Reset MFA for your Account"
+}
+
+variable "authentik_email_template_mfa_recovery" {
+  default = "email/mfa_reset.html"
+}

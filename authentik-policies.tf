@@ -6,31 +6,6 @@
 ########################
 #
 
-# Policy to set login redirect for jhaas as it gets lost in enrollment flow
-# when user navigates away to confirm the email address
-# resource "authentik_policy_expression" "enrollment_login_redirect" {
-#   name              = "jhaas-enrollment-login-redirect"
-#   execution_logging = true
-#   expression        = <<-LOGIN_REDIRECT
-#       context['flow_plan'].context['redirect'] = "${local.authentik_jhaas_login_redirect}"
-#       return True
-#   LOGIN_REDIRECT
-# }
-
-# Policy to immediatly force redirect home
-resource "authentik_policy_expression" "force_home_redirect" {
-  name              = "jhaas-force-home-redirect"
-  execution_logging = true
-  expression        = <<-FORCE_HOME_REDIRECT
-      plan = request.context.get("flow_plan")
-      if not plan:
-        return False
-
-      plan.redirect("/")
-      return False
-  FORCE_HOME_REDIRECT
-}
-
 # Policy to immediatly force login redirect for jhaas
 resource "authentik_policy_expression" "enrollment_force_login_redirect" {
   name              = "jhaas-enrollment-force-login-redirect"
@@ -204,15 +179,6 @@ resource "authentik_policy_password" "global_check_password" {
   check_zxcvbn            = true
   zxcvbn_score_threshold  = 2
 }
-
-# # Policy to check if this is a restored session
-# resource "authentik_policy_expression" "recovery_skip_if_restored" {
-#   name              = "jhaas-recovery-skip-if-restored"
-#   execution_logging = true
-#   expression        = <<-SKIP_IF_RESTORED
-#       return bool(request.context.get('is_restored', True))
-#   SKIP_IF_RESTORED
-# }
 
 # Policy to set redirect url
 resource "authentik_policy_expression" "logout_set_redirect_url" {

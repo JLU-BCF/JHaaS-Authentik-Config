@@ -238,8 +238,8 @@ resource "authentik_stage_email" "mfa_recovery_email" {
   name                     = "jhaas-mfa-recovery-email"
   use_global_settings      = true
   activate_user_on_success = true
-  subject                  = "Reset MFA for your Account"
-  template                 = var.authentik_email_template_recovery
+  subject                  = var.authentik_email_subject_mfa_recovery
+  template                 = var.authentik_email_template_mfa_recovery
   token_expiry             = 30
 }
 
