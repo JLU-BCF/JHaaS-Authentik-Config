@@ -205,6 +205,7 @@ resource "authentik_stage_prompt_field" "mfa_recovery_not_applicable" {
   required  = true
 
   initial_value = <<-MFA_RECOVERY_NOT_APPLICABLE_TEXT
+      <p style="color: #FF0000; font-size: 4em; text-align: center;">&#x26A0;</p>
       There are no recovery codes stored in your account. It is therefore not
       possible to reset multi factor authentication for your account. Please
       contact an administrator.

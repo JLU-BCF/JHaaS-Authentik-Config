@@ -264,6 +264,14 @@ resource "authentik_stage_prompt" "mfa_recovery_success" {
   ]
 }
 
+# Prompt Stage for mfa recovery not applicable
+resource "authentik_stage_prompt" "mfa_recovery_not_applicable" {
+  name = "jhaas-mfa-recovery-not-applicable"
+  fields = [
+    resource.authentik_stage_prompt_field.mfa_recovery_not_applicable.id,
+  ]
+}
+
 # Password Stage for Authentication
 resource "authentik_stage_password" "auth_password" {
   name                          = "jhaas-auth-password"
@@ -296,4 +304,9 @@ resource "authentik_stage_user_login" "auth_login" {
 # Logout after successfull invalidation
 resource "authentik_stage_user_logout" "logout" {
   name = "jhaas-logout"
+}
+
+# Default deny stage
+resource "authentik_stage_deny" "deny" {
+  name = "jhaas-deny"
 }

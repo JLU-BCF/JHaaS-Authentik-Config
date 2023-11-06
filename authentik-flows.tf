@@ -34,7 +34,7 @@ resource "authentik_flow" "webauthn_setup" {
   background         = var.authentik_flow_background
 }
 
-# Flow to setup MFA with static tokens
+# Flow to setup MFA with static codes
 resource "authentik_flow" "mfa_static_setup" {
   name               = "jhaas-mfa-static-setup"
   title              = "Recovery Codes"

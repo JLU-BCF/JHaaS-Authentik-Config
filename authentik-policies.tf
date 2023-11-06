@@ -17,6 +17,20 @@
 #   LOGIN_REDIRECT
 # }
 
+# Policy to immediatly force redirect home
+resource "authentik_policy_expression" "force_home_redirect" {
+  name              = "jhaas-force-home-redirect"
+  execution_logging = true
+  expression        = <<-FORCE_HOME_REDIRECT
+      plan = request.context.get("flow_plan")
+      if not plan:
+        return False
+
+      plan.redirect("/")
+      return False
+  FORCE_HOME_REDIRECT
+}
+
 # Policy to immediatly force login redirect for jhaas
 resource "authentik_policy_expression" "enrollment_force_login_redirect" {
   name              = "jhaas-enrollment-force-login-redirect"

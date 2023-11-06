@@ -1,3 +1,7 @@
+data "authentik_user" "akadmin" {
+  username = "akadmin"
+}
+
 #
 ########################
 #
@@ -10,6 +14,7 @@
 resource "authentik_group" "admins" {
   name         = "admins"
   is_superuser = true
+  users = [ data.authentik_user.akadmin.id ]
 }
 
 # Group to identify the government
