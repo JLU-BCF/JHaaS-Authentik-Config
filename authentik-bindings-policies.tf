@@ -95,23 +95,3 @@ resource "authentik_policy_binding" "check_recovery_codes_presence_2_mfa_recover
   negate  = true
   timeout = 30
 }
-
-# Binds check_recovery_codes_presence Policy to mfa_recovery_2_deny
-resource "authentik_policy_binding" "check_recovery_codes_presence_2_deny" {
-  target  = authentik_flow_stage_binding.mfa_recovery_2_deny.id
-  policy  = authentik_policy_expression.check_recovery_codes_presence.id
-  order   = 0
-  enabled = true
-  negate  = true
-  timeout = 30
-}
-
-# Binds force_home_redirect Policy to mfa_recovery_2_deny
-resource "authentik_policy_binding" "force_home_redirect_2_deny" {
-  target  = authentik_flow_stage_binding.mfa_recovery_2_deny.id
-  policy  = authentik_policy_expression.force_home_redirect.id
-  order   = 10
-  enabled = true
-  negate  = false
-  timeout = 30
-}

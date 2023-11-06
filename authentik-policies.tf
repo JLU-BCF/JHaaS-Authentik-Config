@@ -250,3 +250,13 @@ resource "authentik_policy_expression" "check_recovery_codes_presence" {
       return ak_user_has_authenticator(request.user, 'static')
   CHECK_RECOVERY_CODES_PRESENCE
 }
+
+# Policy to fail with not applicable message
+resource "authentik_policy_expression" "mfa_recovery_not_applicable" {
+  name              = "jhaas-mfa-recovery-not-applicable"
+  execution_logging = true
+  expression        = <<-MFA_RECOVERY_NOT_APPLICABLE
+      ak_message('An error occured: MFA Reset not applicable.')
+      return False
+  MFA_RECOVERY_NOT_APPLICABLE
+}

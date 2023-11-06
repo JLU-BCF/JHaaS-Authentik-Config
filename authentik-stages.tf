@@ -270,6 +270,9 @@ resource "authentik_stage_prompt" "mfa_recovery_not_applicable" {
   fields = [
     resource.authentik_stage_prompt_field.mfa_recovery_not_applicable.id,
   ]
+  validation_policies = [
+    resource.authentik_policy_expression.mfa_recovery_not_applicable.id
+  ]
 }
 
 # Password Stage for Authentication
@@ -304,9 +307,4 @@ resource "authentik_stage_user_login" "auth_login" {
 # Logout after successfull invalidation
 resource "authentik_stage_user_logout" "logout" {
   name = "jhaas-logout"
-}
-
-# Default deny stage
-resource "authentik_stage_deny" "deny" {
-  name = "jhaas-deny"
 }

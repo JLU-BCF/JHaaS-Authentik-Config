@@ -6,10 +6,32 @@
 ########################
 #
 
+# Binds Password Stage to TOTP Setup Flow
+resource "authentik_flow_stage_binding" "totp_setup_2_auth_password" {
+  target                  = authentik_flow.totp_setup.uuid
+  stage                   = authentik_stage_password.auth_password.id
+  order                   = 0
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
 # Binds TOTP Setup Stage to TOTP Setup Flow
 resource "authentik_flow_stage_binding" "totp_setup_2_totp_setup" {
   target                  = authentik_flow.totp_setup.uuid
   stage                   = authentik_stage_authenticator_totp.totp_setup.id
+  order                   = 10
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds Password Stage to WebAuthn Setup Flow
+resource "authentik_flow_stage_binding" "webauthn_setup_2_auth_password" {
+  target                  = authentik_flow.webauthn_setup.uuid
+  stage                   = authentik_stage_password.auth_password.id
   order                   = 0
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
@@ -21,6 +43,17 @@ resource "authentik_flow_stage_binding" "totp_setup_2_totp_setup" {
 resource "authentik_flow_stage_binding" "webauthn_setup_2_webauthn_setup" {
   target                  = authentik_flow.webauthn_setup.uuid
   stage                   = authentik_stage_authenticator_webauthn.webauthn_setup.id
+  order                   = 10
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds Password Stage to MFA Static Codes Setup Flow
+resource "authentik_flow_stage_binding" "mfa_static_setup_2_auth_password" {
+  target                  = authentik_flow.mfa_static_setup.uuid
+  stage                   = authentik_stage_password.auth_password.id
   order                   = 0
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
@@ -32,7 +65,7 @@ resource "authentik_flow_stage_binding" "webauthn_setup_2_webauthn_setup" {
 resource "authentik_flow_stage_binding" "mfa_static_setup_2_recovery_codes_existing" {
   target                  = authentik_flow.mfa_static_setup.uuid
   stage                   = authentik_stage_prompt.recovery_codes_existing.id
-  order                   = 0
+  order                   = 10
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
   re_evaluate_policies    = true
@@ -275,18 +308,7 @@ resource "authentik_flow_stage_binding" "mfa_recovery_2_auth_identification" {
 resource "authentik_flow_stage_binding" "mfa_recovery_2_mfa_recovery_not_applicable" {
   target                  = authentik_flow.mfa_recovery.uuid
   stage                   = authentik_stage_prompt.mfa_recovery_not_applicable.id
-  order                   = 14
-  invalid_response_action = "retry"
-  policy_engine_mode      = "all"
-  re_evaluate_policies    = true
-  evaluate_on_plan        = false
-}
-
-# Binds Deny Stage to MFA Recovery Flow
-resource "authentik_flow_stage_binding" "mfa_recovery_2_deny" {
-  target                  = authentik_flow.mfa_recovery.uuid
-  stage                   = authentik_stage_deny.deny.id
-  order                   = 16
+  order                   = 15
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
   re_evaluate_policies    = true
