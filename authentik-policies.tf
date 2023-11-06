@@ -83,6 +83,29 @@ resource "authentik_policy_expression" "drop_mfa_devices" {
   DROP_MFA_DEVICES
 }
 
+# Policy to drop Recovery Codes
+resource "authentik_policy_expression" "drop_recovery_codes" {
+  name              = "jhaas-drop-recovery-codes"
+  execution_logging = true
+  expression        = <<-DROP_RECOVERY_CODES
+      from authentik.stages.authenticator import devices_for_user
+
+      try:
+        for device in devices_for_user(request.user):
+          device_class = device.__class__.__name__.lower().replace("device", "")
+          if device_class == 'static':
+            ak_logger.info("next delete: {device_class}.".format(device_class=device_class))
+            device.delete()
+            ak_logger.info("deleted: {device_class}.".format(device_class=device_class))
+        return True
+      except Exception as e:
+        ak_logger.warning(str(e))
+
+      ak_message('Something went wrong. Please contact administrator.')
+      return False
+  DROP_RECOVERY_CODES
+}
+
 # Policy to check if username is available
 resource "authentik_policy_expression" "enrollment_check_username" {
   name              = "jhaas-enrollment-check-username"
@@ -203,4 +226,13 @@ resource "authentik_policy_expression" "logout_redirect_if_unauth" {
       plan.redirect("${local.authentik_jhaas_verify_redirect}")
       return False
   REDIRECT_IF_UNAUTH
+}
+
+# Policy to check recovery codes presence
+resource "authentik_policy_expression" "check_recovery_codes_presence" {
+  name              = "jhaas-check-recovery-codes-presence"
+  execution_logging = true
+  expression        = <<-CHECK_RECOVERY_CODES_PRESENCE
+      return ak_user_has_authenticator(request.user, 'static')
+  CHECK_RECOVERY_CODES_PRESENCE
 }

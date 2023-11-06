@@ -24,7 +24,7 @@ resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
   user_verification        = "preferred"
 }
 
-# Configuration Stage for MFA Static Tokens Setup
+# Configuration Stage for MFA Recovery Codes Setup
 resource "authentik_stage_authenticator_static" "mfa_static_setup" {
   name           = "🔑 Create Recovery Codes"
   friendly_name  = "🔑 Recovery Codes"
@@ -73,6 +73,31 @@ resource "authentik_stage_prompt" "password_setup" {
 resource "authentik_stage_user_write" "password_setup" {
   name               = "jhaas-password-setup-write"
   user_creation_mode = "never_create"
+}
+
+# Prompt stage to show information if recovery codes are missing
+resource "authentik_stage_prompt" "recovery_codes_missing" {
+  name = "jhaas-recovery-codes-missing"
+  fields = [
+    resource.authentik_stage_prompt_field.recovery_codes_missing.id,
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id
+  ]
+}
+
+# Prompt stage to show information if recovery codes are already existing on setup
+resource "authentik_stage_prompt" "recovery_codes_existing" {
+  name = "jhaas-recovery-codes-existing"
+  fields = [
+    resource.authentik_stage_prompt_field.recovery_codes_existing.id,
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id,
+    resource.authentik_policy_expression.drop_recovery_codes.id
+  ]
 }
 
 # Prompt Stage to show TOS and get acceptance

@@ -135,7 +135,7 @@ resource "authentik_flow" "logout" {
 # Flow to implicitly consent to jhaas
 resource "authentik_flow" "consent" {
   name               = "jhaas-consent"
-  title              = "Consent"
+  title              = "Attention Required"
   slug               = "consent"
   designation        = "authorization"
   authentication     = "require_authenticated"

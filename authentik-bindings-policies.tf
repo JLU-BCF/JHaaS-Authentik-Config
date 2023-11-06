@@ -55,3 +55,33 @@ resource "authentik_policy_binding" "logout_redirect_if_unauth_2_logout" {
   negate  = false
   timeout = 30
 }
+
+# Binds check_recovery_codes_presence Policy to consent_2_recovery_codes_missing
+resource "authentik_policy_binding" "check_recovery_codes_presence_2_recovery_codes_missing" {
+  target  = authentik_flow_stage_binding.consent_2_recovery_codes_missing.id
+  policy  = authentik_policy_expression.check_recovery_codes_presence.id
+  order   = 0
+  enabled = true
+  negate  = true
+  timeout = 30
+}
+
+# Binds check_recovery_codes_presence Policy to consent_2_mfa_static_setup
+resource "authentik_policy_binding" "check_recovery_codes_presence_2_mfa_static_setup" {
+  target  = authentik_flow_stage_binding.consent_2_mfa_static_setup.id
+  policy  = authentik_policy_expression.check_recovery_codes_presence.id
+  order   = 0
+  enabled = true
+  negate  = true
+  timeout = 30
+}
+
+# Binds check_recovery_codes_presence Policy to mfa_static_setup_2_recovery_codes_existing
+resource "authentik_policy_binding" "check_recovery_codes_presence_2_recovery_codes_existing" {
+  target  = authentik_flow_stage_binding.mfa_static_setup_2_recovery_codes_existing.id
+  policy  = authentik_policy_expression.check_recovery_codes_presence.id
+  order   = 0
+  enabled = true
+  negate  = false
+  timeout = 30
+}

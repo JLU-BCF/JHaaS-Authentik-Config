@@ -241,3 +241,34 @@ resource "authentik_stage_prompt_field" "mfa_recovery_success" {
       You may now log in as usual.
   MFA_RECOVERY_SUCCESS
 }
+
+# Setup Text field for recovery codes missing
+resource "authentik_stage_prompt_field" "recovery_codes_missing" {
+  name      = "jhaas-recovery-codes-missing"
+  label     = "Recovery Codes Missing"
+  field_key = "recovery_codes_missing"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-RECOVERY_CODES_MISSING
+      There are no recovery codes stored in your account. You need recovery codes
+      to reset your second factor if necessary. Recovery codes for your account will
+      be generated in the next step.
+  RECOVERY_CODES_MISSING
+}
+
+# Setup Text field for recovery codes exist when trying to create new
+resource "authentik_stage_prompt_field" "recovery_codes_existing" {
+  name      = "jhaas-recovery-codes-existing"
+  label     = "Recovery Codes Existing"
+  field_key = "recovery_codes_existing"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-RECOVERY_CODES_EXISTING
+      Recovery tokens are already stored in your account. Please note that when new
+      recovery tokens are created, the old ones become invalid.
+  RECOVERY_CODES_EXISTING
+}

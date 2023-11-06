@@ -28,11 +28,22 @@ resource "authentik_flow_stage_binding" "webauthn_setup_2_webauthn_setup" {
   evaluate_on_plan        = false
 }
 
+# Binds Recovery Codes Existing Stage to MFA Static Tokens Setup Flow
+resource "authentik_flow_stage_binding" "mfa_static_setup_2_recovery_codes_existing" {
+  target                  = authentik_flow.mfa_static_setup.uuid
+  stage                   = authentik_stage_prompt.recovery_codes_existing.id
+  order                   = 0
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
 # Binds MFA Static Tokens Setup Stage to MFA Static Tokens Setup Flow
 resource "authentik_flow_stage_binding" "mfa_static_setup_2_mfa_static_setup" {
   target                  = authentik_flow.mfa_static_setup.uuid
   stage                   = authentik_stage_authenticator_static.mfa_static_setup.id
-  order                   = 0
+  order                   = 10
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
@@ -187,7 +198,7 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_identification" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 # Binds Email Stage to Recovery Flow
@@ -198,7 +209,7 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_email" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 # Binds MFA Validation Stage to Recovery Flow
@@ -220,7 +231,7 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_prompt" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 # Binds User Write Stage to Recovery Flow
@@ -231,7 +242,7 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_write" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 # Binds Login Stage to Recovery Flow
@@ -242,7 +253,7 @@ resource "authentik_flow_stage_binding" "recovery_2_recovery_login" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 ##################################
@@ -257,7 +268,7 @@ resource "authentik_flow_stage_binding" "mfa_recovery_2_auth_identification" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 # Binds Email Stage to MFA Recovery Flow
@@ -268,7 +279,7 @@ resource "authentik_flow_stage_binding" "mfa_recovery_2_recovery_email" {
   invalid_response_action = "retry"
   policy_engine_mode      = "any"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
 }
 
 # Binds MFA Recovery Stage to MFA Recovery Flow
@@ -375,5 +386,31 @@ resource "authentik_flow_stage_binding" "logout_2_logout" {
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
   re_evaluate_policies    = true
-  evaluate_on_plan        = true
+  evaluate_on_plan        = false
+}
+
+##################################
+# Consent Flow Bindings
+##################################
+
+# Binds Recovery Codes Missing Stage to Consent Flow
+resource "authentik_flow_stage_binding" "consent_2_recovery_codes_missing" {
+  target                  = authentik_flow.consent.uuid
+  stage                   = authentik_stage_prompt.recovery_codes_missing.id
+  order                   = 0
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
+# Binds MFA Static Setup Stage to Consent Flow
+resource "authentik_flow_stage_binding" "consent_2_mfa_static_setup" {
+  target                  = authentik_flow.consent.uuid
+  stage                   = authentik_stage_authenticator_static.mfa_static_setup.id
+  order                   = 10
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
 }
