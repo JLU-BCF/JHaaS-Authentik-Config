@@ -76,7 +76,7 @@ resource "authentik_flow_stage_binding" "mfa_static_setup_2_recovery_codes_exist
 resource "authentik_flow_stage_binding" "mfa_static_setup_2_mfa_static_setup" {
   target                  = authentik_flow.mfa_static_setup.uuid
   stage                   = authentik_stage_authenticator_static.mfa_static_setup.id
-  order                   = 10
+  order                   = 20
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
   re_evaluate_policies    = true
