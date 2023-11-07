@@ -34,7 +34,7 @@ resource "authentik_flow" "webauthn_setup" {
   background         = var.authentik_flow_background
 }
 
-# Flow to setup MFA with static tokens
+# Flow to setup MFA with static codes
 resource "authentik_flow" "mfa_static_setup" {
   name               = "jhaas-mfa-static-setup"
   title              = "Recovery Codes"
@@ -90,6 +90,20 @@ resource "authentik_flow" "recovery" {
   background         = var.authentik_flow_background
 }
 
+# Flow to reset MFA
+resource "authentik_flow" "mfa_recovery" {
+  name               = "jhaas-mfa-recovery"
+  title              = "Reset Multi-Factor Authentication"
+  slug               = "mfa-recovery"
+  designation        = "recovery"
+  authentication     = "require_unauthenticated"
+  denied_action      = "message_continue"
+  layout             = "stacked"
+  policy_engine_mode = "any"
+  compatibility_mode = true
+  background         = var.authentik_flow_background
+}
+
 # Flow to authenticate user
 resource "authentik_flow" "auth" {
   name               = "jhaas-auth"
@@ -121,7 +135,7 @@ resource "authentik_flow" "logout" {
 # Flow to implicitly consent to jhaas
 resource "authentik_flow" "consent" {
   name               = "jhaas-consent"
-  title              = "Consent"
+  title              = "Attention Required"
   slug               = "consent"
   designation        = "authorization"
   authentication     = "require_authenticated"

@@ -20,6 +20,10 @@ tf-fmt:
 tf-package:
   stage: package
   image: alpine:3.18
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - when: manual
+
   script:
     - apk add --no-cache curl
     - tar -vczf /tmp/${TERRAFORM_MODULE_NAME}-${TERRAFORM_MODULE_SYSTEM}-${TERRAFORM_MODULE_VERSION}.tgz -C ${TERRAFORM_MODULE_DIR} --exclude=./.git --exclude=./.gitignore --exclude=./.gitlab-ci.yml .

@@ -24,13 +24,37 @@ resource "authentik_stage_authenticator_webauthn" "webauthn_setup" {
   user_verification        = "preferred"
 }
 
-# Configuration Stage for MFA Static Tokens Setup
+# Configuration Stage for MFA Recovery Codes Setup
 resource "authentik_stage_authenticator_static" "mfa_static_setup" {
   name           = "🔑 Create Recovery Codes"
   friendly_name  = "🔑 Recovery Codes"
   configure_flow = authentik_flow.mfa_static_setup.uuid
-  token_count    = 6
+  token_count    = 4
   token_length   = 8
+}
+
+# Stage for MFA validation and initial setup
+resource "authentik_stage_authenticator_validate" "mfa_validation" {
+  name           = "jhaas-mfa-validation"
+  device_classes = ["totp", "webauthn"]
+
+  not_configured_action      = "configure"
+  webauthn_user_verification = "preferred"
+  last_auth_threshold        = "seconds=0"
+
+  configuration_stages = [
+    authentik_stage_authenticator_totp.totp_setup.id,
+    authentik_stage_authenticator_webauthn.webauthn_setup.id,
+  ]
+}
+
+# Stage for MFA recovery
+resource "authentik_stage_authenticator_validate" "mfa_recovery_validation" {
+  name           = "jhaas-mfa-recovery-validation"
+  device_classes = ["static"]
+
+  not_configured_action = "deny"
+  last_auth_threshold   = "seconds=0"
 }
 
 # Prompt Stage for initial password and password reset
@@ -49,6 +73,31 @@ resource "authentik_stage_prompt" "password_setup" {
 resource "authentik_stage_user_write" "password_setup" {
   name               = "jhaas-password-setup-write"
   user_creation_mode = "never_create"
+}
+
+# Prompt stage to show information if recovery codes are missing
+resource "authentik_stage_prompt" "recovery_codes_missing" {
+  name = "jhaas-recovery-codes-missing"
+  fields = [
+    resource.authentik_stage_prompt_field.recovery_codes_missing.id,
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id
+  ]
+}
+
+# Prompt stage to show information if recovery codes are already existing on setup
+resource "authentik_stage_prompt" "recovery_codes_existing" {
+  name = "jhaas-recovery-codes-existing"
+  fields = [
+    resource.authentik_stage_prompt_field.recovery_codes_existing.id,
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id,
+    resource.authentik_policy_expression.drop_recovery_codes.id
+  ]
 }
 
 # Prompt Stage to show TOS and get acceptance
@@ -105,10 +154,10 @@ resource "authentik_stage_prompt" "enrollment_pre_recovery_codes" {
   name = "jhaas-enrollment-pre-recovery-codes"
   fields = [
     resource.authentik_stage_prompt_field.enrollment_recovery_codes_text.id,
-    resource.authentik_stage_prompt_field.enrollment_recovery_codes_accept.id
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
   ]
   validation_policies = [
-    resource.authentik_policy_expression.enrollment_check_recovery_codes_accept.id
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id
   ]
 }
 
@@ -117,21 +166,6 @@ resource "authentik_stage_prompt" "enrollment_pre_mfa" {
   name = "jhaas-enrollment-pre-mfa"
   fields = [
     resource.authentik_stage_prompt_field.enrollment_mfa_text.id
-  ]
-}
-
-# Stage to validate (in terms of enrollment: setup) mfa
-resource "authentik_stage_authenticator_validate" "enrollment_mfa_setup" {
-  name           = "jhaas-enrollment-mfa-setup"
-  device_classes = ["totp", "webauthn"]
-
-  not_configured_action      = "configure"
-  webauthn_user_verification = "required"
-  last_auth_threshold        = "seconds=0"
-
-  configuration_stages = [
-    authentik_stage_authenticator_totp.totp_setup.id,
-    authentik_stage_authenticator_webauthn.webauthn_setup.id
   ]
 }
 
@@ -159,8 +193,8 @@ resource "authentik_stage_identification" "recovery_identification" {
   show_matched_user         = false
   show_source_labels        = false
 
-  enrollment_flow = authentik_flow.enrollment.uuid
-  recovery_flow   = authentik_flow.recovery.uuid
+  # enrollment_flow = authentik_flow.enrollment.uuid
+  # recovery_flow   = authentik_flow.recovery.uuid
 }
 
 # Email Stage for password recovery
@@ -171,14 +205,6 @@ resource "authentik_stage_email" "recovery_email" {
   subject                  = var.authentik_email_subject_recovery
   template                 = var.authentik_email_template_recovery
   token_expiry             = 30
-}
-
-# MFA Stage without Static Codes for Password Recovery
-resource "authentik_stage_authenticator_validate" "recovery_mfa_validation" {
-  name                  = "jhaas-recovery-mfa-validation"
-  device_classes        = ["totp", "webauthn"]
-  not_configured_action = "deny"
-  last_auth_threshold   = "seconds=0"
 }
 
 # Prompt stage to get passwords
@@ -207,6 +233,48 @@ resource "authentik_stage_user_login" "recovery_login" {
   session_duration   = "seconds=0"
 }
 
+# Email Stage for mfa recovery
+resource "authentik_stage_email" "mfa_recovery_email" {
+  name                     = "jhaas-mfa-recovery-email"
+  use_global_settings      = true
+  activate_user_on_success = true
+  subject                  = var.authentik_email_subject_mfa_recovery
+  template                 = var.authentik_email_template_mfa_recovery
+  token_expiry             = 30
+}
+
+# Prompt Stage with reset text for mfa recovery
+resource "authentik_stage_prompt" "mfa_recovery_reset_text" {
+  name = "jhaas-mfa-recovery-reset-text"
+  fields = [
+    resource.authentik_stage_prompt_field.mfa_recovery_reset_text.id,
+    resource.authentik_stage_prompt_field.recovery_codes_warning_accept.id
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.check_recovery_codes_warning_accept.id,
+    resource.authentik_policy_expression.drop_mfa_devices.id
+  ]
+}
+
+# Prompt Stage for mfa recovery success
+resource "authentik_stage_prompt" "mfa_recovery_success" {
+  name = "jhaas-mfa-recovery-success"
+  fields = [
+    resource.authentik_stage_prompt_field.mfa_recovery_success.id,
+  ]
+}
+
+# Prompt Stage for mfa recovery not applicable
+resource "authentik_stage_prompt" "mfa_recovery_not_applicable" {
+  name = "jhaas-mfa-recovery-not-applicable"
+  fields = [
+    resource.authentik_stage_prompt_field.mfa_recovery_not_applicable.id,
+  ]
+  validation_policies = [
+    resource.authentik_policy_expression.mfa_recovery_not_applicable.id
+  ]
+}
+
 # Password Stage for Authentication
 resource "authentik_stage_password" "auth_password" {
   name                          = "jhaas-auth-password"
@@ -226,22 +294,6 @@ resource "authentik_stage_identification" "auth_identification" {
   enrollment_flow = authentik_flow.enrollment.uuid
   recovery_flow   = authentik_flow.recovery.uuid
   password_stage  = authentik_stage_password.auth_password.id
-}
-
-# Stage to validate mfa in Authentication
-resource "authentik_stage_authenticator_validate" "auth_mfa_validate" {
-  name           = "jhaas-auth-mfa-validate"
-  device_classes = ["totp", "webauthn", "static"]
-
-  not_configured_action      = "configure"
-  webauthn_user_verification = "preferred"
-  last_auth_threshold        = "seconds=0"
-
-  configuration_stages = [
-    authentik_stage_authenticator_totp.totp_setup.id,
-    authentik_stage_authenticator_webauthn.webauthn_setup.id,
-    authentik_stage_authenticator_static.mfa_static_setup.id,
-  ]
 }
 
 # Login after successfull authentication

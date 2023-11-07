@@ -15,9 +15,7 @@ resource "authentik_stage_prompt_field" "back_to_login" {
   order     = 1000
   required  = true
 
-  sub_text = <<-BTL_TEXT
-      &lt; back to <a href="${var.authentik_jhaas_login_flow}">login</a>
-  BTL_TEXT
+  sub_text = "&lt; back to <a href=\"${var.authentik_jhaas_login_flow}\">login</a>"
 }
 
 # Setup Password field for initial password setup and password reset
@@ -134,8 +132,8 @@ resource "authentik_stage_prompt_field" "enrollment_recovery_codes_text" {
 }
 
 # Setup Info about Loss of Recovery Codes acceptance field for enrollment
-resource "authentik_stage_prompt_field" "enrollment_recovery_codes_accept" {
-  name      = "jhaas-enrollment-recovery-codes-accept"
+resource "authentik_stage_prompt_field" "recovery_codes_warning_accept" {
+  name      = "jhaas-recovery-codes-warning-accept"
   label     = "I understand that the loss of these recovery tokens may result in a permanent lockout from my account"
   field_key = "recovery_codes_accept"
   type      = "checkbox"
@@ -195,4 +193,88 @@ resource "authentik_stage_prompt_field" "recovery_password_repeat" {
   type        = "password"
   order       = 20
   required    = true
+}
+
+# Setup Text field for mfa recovery not applicable
+resource "authentik_stage_prompt_field" "mfa_recovery_not_applicable" {
+  name      = "jhaas-mfa-recovery-not-applicable"
+  label     = "MFA Recovery not applicable"
+  field_key = "mfa_recovery_not_applicable"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-MFA_RECOVERY_NOT_APPLICABLE_TEXT
+      <p style="color: #FF0000; font-size: 4em; text-align: center;">&#x26A0;</p>
+      <p style="margin-bottom: 1em;">
+        There are no recovery codes stored in your account. It is therefore not
+        possible to reset multi factor authentication for your account. Please
+        contact an administrator.
+      </p>
+      <p style="text-align: center;">
+        <a href="/">Back to Login</a>
+      </p>
+  MFA_RECOVERY_NOT_APPLICABLE_TEXT
+}
+
+# Setup Text field for mfa recovery
+resource "authentik_stage_prompt_field" "mfa_recovery_reset_text" {
+  name      = "jhaas-mfa-recovery-reset-text"
+  label     = "Information about MFA recovery"
+  field_key = "mfa_recovery_reset_text"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-MFA_RESET_TEXT
+      In the next step, your stored MFA devices will be deleted. Your current
+      recovery codes will become invalid and you will receive a new set of
+      recovery codes. You must then register a new second factor.
+  MFA_RESET_TEXT
+}
+
+# Setup Text field for mfa recovery success
+resource "authentik_stage_prompt_field" "mfa_recovery_success" {
+  name      = "jhaas-mfa-recovery-success"
+  label     = "MFA Reset successfull"
+  field_key = "mfa_recovery_success"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-MFA_RECOVERY_SUCCESS
+      You have successfully reset your second factor.
+      You may now log in as usual.
+  MFA_RECOVERY_SUCCESS
+}
+
+# Setup Text field for recovery codes missing
+resource "authentik_stage_prompt_field" "recovery_codes_missing" {
+  name      = "jhaas-recovery-codes-missing"
+  label     = "Recovery Codes Missing"
+  field_key = "recovery_codes_missing"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-RECOVERY_CODES_MISSING
+      There are no recovery codes stored in your account. You need recovery codes
+      to reset your second factor if necessary. Recovery codes for your account will
+      be generated in the next step.
+  RECOVERY_CODES_MISSING
+}
+
+# Setup Text field for recovery codes exist when trying to create new
+resource "authentik_stage_prompt_field" "recovery_codes_existing" {
+  name      = "jhaas-recovery-codes-existing"
+  label     = "Recovery Codes Existing"
+  field_key = "recovery_codes_existing"
+  type      = "static"
+  order     = 0
+  required  = true
+
+  initial_value = <<-RECOVERY_CODES_EXISTING
+      Recovery tokens are already stored in your account. Please note that when new
+      recovery tokens are created, the old ones become invalid.
+  RECOVERY_CODES_EXISTING
 }
