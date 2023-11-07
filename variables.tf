@@ -120,7 +120,7 @@ variable "authentik_email_subject_enrollment" {
 }
 
 variable "authentik_email_template_enrollment" {
-  default = "email/account_confirmation.html"
+  default = "account_confirmation.html"
 }
 
 variable "authentik_email_subject_recovery" {
@@ -128,7 +128,7 @@ variable "authentik_email_subject_recovery" {
 }
 
 variable "authentik_email_template_recovery" {
-  default = "email/password_reset.html"
+  default = "password_reset.html"
 }
 
 variable "authentik_email_subject_mfa_recovery" {
