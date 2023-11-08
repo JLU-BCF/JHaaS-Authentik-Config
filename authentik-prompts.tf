@@ -15,7 +15,7 @@ resource "authentik_stage_prompt_field" "back_to_login" {
   order     = 1000
   required  = true
 
-  sub_text = "&lt; back to <a href=\"${var.authentik_jhaas_login_flow}\">login</a>"
+  sub_text = "&lt; back to <a href=\"/\">login</a>"
 }
 
 # Setup Password field for initial password setup and password reset

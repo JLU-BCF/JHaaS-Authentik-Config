@@ -105,10 +105,6 @@ resource "authentik_policy_expression" "enrollment_check_username" {
 
       if check_user_username or check_user_email:
         ak_message('This email address has already been taken, you may login instead.')
-        plan = request.context.get("flow_plan")
-        if not plan:
-          return False
-        plan.redirect("${var.authentik_jhaas_login_flow}")
         return False
 
       return True

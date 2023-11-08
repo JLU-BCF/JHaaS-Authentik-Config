@@ -61,11 +61,6 @@ variable "authentik_provider_redirect_uri" {
 }
 
 # Configure Flows
-variable "authentik_jhaas_login_flow" {
-  description = "URL for the JHaaS authentication flow."
-  default     = "/if/flow/auth"
-}
-
 variable "authentik_flow_background" {
   description = "Default Background applied to all flows."
   default     = "/static/dist/assets/images/flow_background.jpg"
