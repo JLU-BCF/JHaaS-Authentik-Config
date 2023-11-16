@@ -83,11 +83,22 @@ resource "authentik_flow_stage_binding" "mfa_static_setup_2_mfa_static_setup" {
   evaluate_on_plan        = false
 }
 
+# Binds Password Stage to Password Setup Flow
+resource "authentik_flow_stage_binding" "password_setup_2_auth_password" {
+  target                  = authentik_flow.password_setup.uuid
+  stage                   = authentik_stage_password.auth_password.id
+  order                   = 0
+  invalid_response_action = "retry"
+  policy_engine_mode      = "all"
+  re_evaluate_policies    = true
+  evaluate_on_plan        = false
+}
+
 # Binds Password Setup Prompt Stage to Password Setup Flow
 resource "authentik_flow_stage_binding" "password_setup_2_password_setup_prompt" {
   target                  = authentik_flow.password_setup.uuid
   stage                   = authentik_stage_prompt.password_setup.id
-  order                   = 0
+  order                   = 10
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
   re_evaluate_policies    = true
@@ -98,7 +109,7 @@ resource "authentik_flow_stage_binding" "password_setup_2_password_setup_prompt"
 resource "authentik_flow_stage_binding" "password_setup_2_password_setup_write" {
   target                  = authentik_flow.password_setup.uuid
   stage                   = authentik_stage_user_write.password_setup.id
-  order                   = 10
+  order                   = 20
   invalid_response_action = "retry"
   policy_engine_mode      = "all"
   re_evaluate_policies    = true

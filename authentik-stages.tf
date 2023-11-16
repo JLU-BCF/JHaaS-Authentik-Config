@@ -193,8 +193,7 @@ resource "authentik_stage_identification" "recovery_identification" {
   show_matched_user         = false
   show_source_labels        = false
 
-  # enrollment_flow = authentik_flow.enrollment.uuid
-  # recovery_flow   = authentik_flow.recovery.uuid
+  enrollment_flow = authentik_flow.enrollment.uuid
 }
 
 # Email Stage for password recovery
@@ -292,7 +291,6 @@ resource "authentik_stage_identification" "auth_identification" {
   show_source_labels        = false
 
   enrollment_flow = authentik_flow.enrollment.uuid
-  recovery_flow   = authentik_flow.recovery.uuid
   password_stage  = authentik_stage_password.auth_password.id
 }
 
