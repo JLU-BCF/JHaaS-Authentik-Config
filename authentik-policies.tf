@@ -198,17 +198,12 @@ resource "authentik_policy_expression" "set_redirect" {
         except:
           return False
 
-      def set_flow_redirect(redirect):
-        if (redirect is not None) and all([uri_validator(redirect), check_redirect_uri(redirect)]):
-          context['flow_plan'].context['redirect'] = redirect
-        else:
-          context['flow_plan'].context['redirect'] = default_return_url
-
       allowed_redirect_urls = ["${local.jhaas_url}/.*"]
-      default_return_url = "${local.authentik_jhaas_verify_redirect}"
-      redirect_param = "redirect"
-      redirect_url = QueryDict(request.http_request.GET.get("query")).get(redirect_param)
-      set_flow_redirect(redirect_url)
+      redi_param = "redirect"
+      redi_url = QueryDict(request.http_request.GET.get("query")).get(redi_param)
+
+      if all([redi_url is not None, uri_validator(redi_url), check_redirect_uri(redi_url)]):
+        context['flow_plan'].context['redirect'] = redi_url
 
       return True
   SET_REDIRECT
