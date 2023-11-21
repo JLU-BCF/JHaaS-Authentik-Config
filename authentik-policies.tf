@@ -176,15 +176,42 @@ resource "authentik_policy_password" "global_check_password" {
   zxcvbn_score_threshold  = 2
 }
 
-# Policy to set redirect url
-resource "authentik_policy_expression" "logout_set_redirect_url" {
-  name              = "jhaas-logout-set-redirect-url"
+# Policy to read and set redirect url from get parameter
+resource "authentik_policy_expression" "set_redirect" {
+  name              = "jhaas-set-redirect"
   execution_logging = true
-  expression        = <<-SET_REDIRECT_URL
-      context['flow_plan'].context['redirect'] = "${local.authentik_jhaas_verify_redirect}"
+  expression        = <<-SET_REDIRECT
+      from django.http import QueryDict
+      from urllib.parse import urlparse
+      import re
+
+      def uri_validator(x):
+        try:
+          result = urlparse(x)
+          return all([result.scheme, result.netloc])
+        except:
+          return False
+
+      def check_redirect_uri(redirect_uri):
+        try:
+          return any(re.fullmatch(x, redirect_uri,flags=re.IGNORECASE) for x in allowed_redirect_urls)
+        except:
+          return False
+
+      def set_flow_redirect(redirect):
+        if (redirect is not None) and all([uri_validator(redirect), check_redirect_uri(redirect)]):
+          context['flow_plan'].context['redirect'] = redirect
+        else:
+          context['flow_plan'].context['redirect'] = default_return_url
+
+      allowed_redirect_urls = ["${local.jhaas_url}/.*"]
+      default_return_url = "${local.authentik_jhaas_verify_redirect}"
+      redirect_param = "redirect"
+      redirect_url = QueryDict(request.http_request.GET.get("query")).get(redirect_param)
+      set_flow_redirect(redirect_url)
 
       return True
-  SET_REDIRECT_URL
+  SET_REDIRECT
 }
 
 # Policy to redirect user if already logged out

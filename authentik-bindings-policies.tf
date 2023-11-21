@@ -16,10 +16,10 @@ resource "authentik_policy_binding" "enrollment_force_login_redirect_2_enrollmen
   timeout = 30
 }
 
-# Binds Set-Redirect-Url Policy to logout_2_logout
-resource "authentik_policy_binding" "logout_set_redirect_url_2_logout" {
+# Binds set_redirect Policy to logout_2_logout
+resource "authentik_policy_binding" "set_redirect_2_logout" {
   target  = authentik_flow_stage_binding.logout_2_logout.id
-  policy  = authentik_policy_expression.logout_set_redirect_url.id
+  policy  = authentik_policy_expression.set_redirect.id
   order   = 0
   enabled = true
   negate  = false
@@ -73,5 +73,49 @@ resource "authentik_policy_binding" "check_recovery_codes_presence_2_mfa_recover
   order   = 0
   enabled = true
   negate  = true
+  timeout = 30
+}
+
+###
+# Redirect Policies for Configuration Stages
+###
+
+# Binds set_redirect Policy to totp_setup_2_totp_setup
+resource "authentik_policy_binding" "set_redirect_2_totp_setup" {
+  target  = authentik_flow_stage_binding.totp_setup_2_totp_setup.id
+  policy  = authentik_policy_expression.set_redirect.id
+  order   = 0
+  enabled = true
+  negate  = false
+  timeout = 30
+}
+
+# Binds set_redirect Policy to webauthn_setup_2_webauthn_setup
+resource "authentik_policy_binding" "set_redirect_2_webauthn_setup" {
+  target  = authentik_flow_stage_binding.webauthn_setup_2_webauthn_setup.id
+  policy  = authentik_policy_expression.set_redirect.id
+  order   = 0
+  enabled = true
+  negate  = false
+  timeout = 30
+}
+
+# Binds set_redirect Policy to mfa_static_setup_2_mfa_static_setup
+resource "authentik_policy_binding" "set_redirect_2_mfa_static_setup" {
+  target  = authentik_flow_stage_binding.mfa_static_setup_2_mfa_static_setup.id
+  policy  = authentik_policy_expression.set_redirect.id
+  order   = 0
+  enabled = true
+  negate  = false
+  timeout = 30
+}
+
+# Binds set_redirect Policy to password_setup_2_password_setup_write
+resource "authentik_policy_binding" "set_redirect_2_password_setup_write" {
+  target  = authentik_flow_stage_binding.password_setup_2_password_setup_write.id
+  policy  = authentik_policy_expression.set_redirect.id
+  order   = 0
+  enabled = true
+  negate  = false
   timeout = 30
 }
