@@ -209,7 +209,7 @@ resource "authentik_application" "portal" {
 ########################
 #
 
-resource "authentik_tenant" "jhaas" {
+resource "authentik_brand" "jhaas" {
   domain  = var.authentik_domain
   default = true
 
@@ -225,7 +225,7 @@ resource "authentik_tenant" "jhaas" {
   flow_user_settings  = ""
 
   web_certificate = ""
-  event_retention = "days=365"
+  # event_retention = "days=365"
   attributes = jsonencode(
     {
       settings = {
