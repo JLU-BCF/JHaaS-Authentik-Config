@@ -46,7 +46,7 @@ resource "authentik_group" "jupyterhubs" {
 #
 
 # Map email attributes
-resource "authentik_scope_mapping" "email" {
+resource "authentik_property_mapping_provider_scope" "email" {
   name        = "jhaas-email"
   scope_name  = "email"
   description = "Map Email address"
@@ -59,7 +59,7 @@ resource "authentik_scope_mapping" "email" {
 }
 
 # Map openid attributes
-resource "authentik_scope_mapping" "openid" {
+resource "authentik_property_mapping_provider_scope" "openid" {
   name        = "jhaas-openid"
   scope_name  = "openid"
   description = "Map openid"
@@ -69,7 +69,7 @@ resource "authentik_scope_mapping" "openid" {
 }
 
 # Map profile attributes
-resource "authentik_scope_mapping" "profile" {
+resource "authentik_property_mapping_provider_scope" "profile" {
   name        = "jhaas-profile"
   scope_name  = "profile"
   description = "Map profile"
@@ -87,7 +87,7 @@ resource "authentik_scope_mapping" "profile" {
 }
 
 # Map user attributes
-resource "authentik_scope_mapping" "user_attributes" {
+resource "authentik_property_mapping_provider_scope" "user_attributes" {
   name        = "jhaas-user-attributes"
   scope_name  = "user-attributes"
   description = "Map user attributes into OIDC response"
@@ -169,10 +169,10 @@ resource "authentik_provider_oauth2" "portal" {
   issuer_mode                = "per_provider"
 
   property_mappings = [
-    authentik_scope_mapping.email.id,
-    authentik_scope_mapping.openid.id,
-    authentik_scope_mapping.profile.id,
-    authentik_scope_mapping.user_attributes.id
+    authentik_property_mapping_provider_scope.email.id,
+    authentik_property_mapping_provider_scope.openid.id,
+    authentik_property_mapping_provider_scope.profile.id,
+    authentik_property_mapping_provider_scope.user_attributes.id
   ]
 }
 
@@ -225,7 +225,6 @@ resource "authentik_brand" "jhaas" {
   flow_user_settings  = ""
 
   web_certificate = ""
-  # event_retention = "days=365"
   attributes = jsonencode(
     {
       settings = {
@@ -235,4 +234,31 @@ resource "authentik_brand" "jhaas" {
       }
     }
   )
+}
+
+#
+########################
+#
+# Add System Settings
+#
+########################
+#
+
+resource "authentik_system_settings" "jhaas" {
+  event_retention = "days=365"
+
+  footer_links = [
+    {
+      name = "Login",
+      href = "/if/flow/auth/"
+    },
+    {
+      name = "Password Reset",
+      href = "/if/flow/password-recovery/"
+    },
+    {
+      name = "MFA Reset",
+      href = "/if/flow/mfa-recovery/"
+    }
+  ]
 }
