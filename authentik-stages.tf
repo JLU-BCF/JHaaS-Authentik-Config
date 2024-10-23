@@ -137,6 +137,7 @@ resource "authentik_stage_user_write" "enrollment_write" {
   create_users_as_inactive = true
   create_users_group       = authentik_group.auth_untrusted.id
   user_creation_mode       = "always_create"
+  user_type                = "internal"
 }
 
 # Email Stage for email verification in enrollment
