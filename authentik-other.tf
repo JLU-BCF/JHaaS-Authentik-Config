@@ -161,6 +161,7 @@ resource "authentik_provider_oauth2" "portal" {
 
   authentication_flow = authentik_flow.auth.uuid
   authorization_flow  = authentik_flow.consent.uuid
+  invalidation_flow   = authentik_flow.logout.uuid
 
   access_code_validity       = "minutes=1"
   access_token_validity      = "minutes=5"
