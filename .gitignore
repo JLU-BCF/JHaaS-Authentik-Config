@@ -1,3 +1,6 @@
+# Ignore .env file
+.env
+
 # For now, also exclude lock files
 *.lock.hcl
 

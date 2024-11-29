@@ -152,8 +152,11 @@ resource "authentik_provider_oauth2" "portal" {
   client_id     = var.authentik_jhaas_client_id
   client_secret = var.authentik_jhaas_client_secret
   client_type   = "confidential"
-  redirect_uris = [
-    local.authentik_provider_redirect_uri
+  allowed_redirect_uris = [
+    {
+      matching_mode = "strict",
+      url           = local.authentik_provider_redirect_uri
+    }
   ]
 
   signing_key = authentik_certificate_key_pair.authentik_self_signed.id
