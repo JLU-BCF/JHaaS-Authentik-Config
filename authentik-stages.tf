@@ -147,7 +147,7 @@ resource "authentik_stage_email" "enrollment_email" {
   activate_user_on_success = true
   subject                  = var.authentik_email_subject_enrollment
   template                 = var.authentik_email_template_enrollment
-  token_expiry             = 30
+  token_expiry             = "minutes=30"
 }
 
 # Prompt Stage to show information before showing recovery codes
@@ -204,7 +204,7 @@ resource "authentik_stage_email" "recovery_email" {
   activate_user_on_success = true
   subject                  = var.authentik_email_subject_recovery
   template                 = var.authentik_email_template_recovery
-  token_expiry             = 30
+  token_expiry             = "minutes=30"
 }
 
 # Prompt stage to get passwords
@@ -240,7 +240,7 @@ resource "authentik_stage_email" "mfa_recovery_email" {
   activate_user_on_success = true
   subject                  = var.authentik_email_subject_mfa_recovery
   template                 = var.authentik_email_template_mfa_recovery
-  token_expiry             = 30
+  token_expiry             = "minutes=30"
 }
 
 # Prompt Stage with reset text for mfa recovery
